@@ -3,11 +3,15 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin;
 using Owin;
 using ProyectoXalli_Gentelella.Models;
+using System.Configuration;
 
 [assembly: OwinStartupAttribute(typeof(ProyectoXalli_Gentelella.Startup))]
-namespace ProyectoXalli_Gentelella {
-    public partial class Startup {
-        public void Configuration(IAppBuilder app) {
+namespace ProyectoXalli_Gentelella
+{
+    public partial class Startup
+    {
+        public void Configuration(IAppBuilder app)
+        {
             //inicialización de los mapeos
             app.MapSignalR();
 
@@ -15,7 +19,8 @@ namespace ProyectoXalli_Gentelella {
             CrearPermisos();
         }
 
-        private void CrearPermisos() {
+        private void CrearPermisos()
+        {
             //CREAR LA CONEXION A LA BASE DE DATOS
             ApplicationDbContext contex = new ApplicationDbContext();
             //DBControl db = new DBControl();
@@ -26,7 +31,8 @@ namespace ProyectoXalli_Gentelella {
             IdentityRole permiso = new IdentityRole();
 
             //SI NO EXISTE EL PERMISO ADMINISTRADOR PRINCIPAL
-            if (!AdmPermisos.RoleExists("Admin")) {
+            if (!AdmPermisos.RoleExists("Admin"))
+            {
                 //CREAR EL ROL ADMIN
                 permiso = new IdentityRole();
                 permiso.Name = "Admin";
@@ -40,15 +46,17 @@ namespace ProyectoXalli_Gentelella {
                 var usuario = new ApplicationUser();
 
                 //CRAR EL USUARIO PARA EL ROL ADMIN
-                usuario.UserName = "daniela97";
-                usuario.Email = "danycordero9@gmail.com";
+                usuario.UserName = ConfigurationManager.AppSettings["AdminUser"];
+                usuario.Email = ConfigurationManager.AppSettings["AdminEmail"];
                 usuario.PeopleId = 0;
                 usuario.LockoutEnabled = true;//USUARIO NO BLOQUEADO
+                var password = ConfigurationManager.AppSettings["AdminPassword"];
 
-                var resultado = AdmUsuario.Create(usuario, "Dcl030197..");
+                var resultado = AdmUsuario.Create(usuario, password);
 
                 //SI EL USUARIO SE CRE EXISTOSAMENTE
-                if (resultado.Succeeded) {
+                if (resultado.Succeeded)
+                {
 
                     //ASIGNAMOS EL ROL AL USUARIO RECIEN CREADO
                     AdmUsuario.AddToRole(usuario.Id, "Admin");
@@ -56,27 +64,31 @@ namespace ProyectoXalli_Gentelella {
             }
 
             //SI NO EXISTE EL PERMISO MESERO
-            if (!AdmPermisos.RoleExists("Mesero")) {
+            if (!AdmPermisos.RoleExists("Mesero"))
+            {
                 permiso = new IdentityRole();
                 permiso.Name = "Mesero";
                 AdmPermisos.Create(permiso);
             }
 
             //SI NO EXISTE EL PERMISO COCINERO
-            if (!AdmPermisos.RoleExists("Cocinero")) {
+            if (!AdmPermisos.RoleExists("Cocinero"))
+            {
                 permiso = new IdentityRole();
                 permiso.Name = "Cocinero";
                 AdmPermisos.Create(permiso);
             }
 
             //SI NO EXISTE EL PERMISO RESPONSABLE
-            if (!AdmPermisos.RoleExists("Recepcionista")) {
+            if (!AdmPermisos.RoleExists("Recepcionista"))
+            {
                 permiso = new IdentityRole();
                 permiso.Name = "Recepcionista";
                 AdmPermisos.Create(permiso);
             }
 
-            if (!AdmPermisos.RoleExists("Bartender")) {
+            if (!AdmPermisos.RoleExists("Bartender"))
+            {
                 permiso = new IdentityRole();
                 permiso.Name = "Bartender";
                 AdmPermisos.Create(permiso);

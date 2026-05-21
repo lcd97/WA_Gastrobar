@@ -1,6 +1,7 @@
 ﻿using ProyectoXalli_Gentelella.Models;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -32,9 +33,8 @@ namespace ProyectoXalli_Gentelella.Controllers.Busquedas {
                 return Json(new { success = completado, message = mensaje }, JsonRequestBehavior.AllowGet);
             }
 
-            string emailHotel = "proyectoshotel2020@gmail.com";
-            string passwordHotel = "bxqalmibjgxzjqux";
-            //string passwordHotel = "Calabazas#sin.Nombre2020";
+            string emailHotel = ConfigurationManager.AppSettings["EmailHotel"];
+            string passwordHotel = ConfigurationManager.AppSettings["PasswordHotel"];
 
             Orden orden = db.Ordenes.Where(w => w.CodigoOrden == codeOrder).FirstOrDefault();
             var cliente = db.Clientes.FirstOrDefault(w => w.Id == orden.ClienteId && w.EmailCliente != "defaultuser@xalli.com");

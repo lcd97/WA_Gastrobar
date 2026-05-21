@@ -3,6 +3,7 @@ using ProyectoXalli_Gentelella.Models;
 using ProyectoXalli_Gentelella.Web_Sockets;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.Entity;
 using System.Data.Entity.Validation;
 using System.Globalization;
@@ -14,10 +15,12 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
-namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
+namespace ProyectoXalli_Gentelella.Controllers.Movimientos
+{
 
     [Authorize]
-    public class OrdenesController : Controller {
+    public class OrdenesController : Controller
+    {
         private DBControl db = new DBControl();
         private string mensaje = "";
         private bool completado = false;
@@ -25,15 +28,18 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
         //CONEXION A LA BASE DE DATOS SEGURIDAD
         private ApplicationDbContext context = new ApplicationDbContext();
 
-        public ActionResult Salidas() {
+        public ActionResult Salidas()
+        {
             return View();
         }
 
-        public ActionResult categoryList() {
+        public ActionResult categoryList()
+        {
             var data = (from obj in db.CategoriasMenu.ToList()
                         join c in db.Bodegas.ToList() on obj.BodegaId equals c.Id
                         where c.DescripcionBodega.ToUpper() == "BAR"
-                        select new {
+                        select new
+                        {
                             Id = obj.Id,
                             Descripcion = obj.DescripcionCategoriaMenu
                         }).ToList();
@@ -44,7 +50,8 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
 
         [Authorize(Roles = "Admin, Mesero, Bartender")]
         // GET: Ordenes
-        public ActionResult Index() {
+        public ActionResult Index()
+        {
             ViewBag.MesasId = new SelectList(ListaMesas(), "Id", "Descripcion");
             ViewBag.CategoriaId = new SelectList(db.CategoriasMenu, "Id", "DescripcionCategoriaMenu");
 
@@ -55,7 +62,8 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
         /// RETORNA EL CODIGO DE ENTRADA AUTOMATICAMENTE
         /// </summary>
         /// <returns></returns>
-        public ActionResult OrdenesCode() {
+        public ActionResult OrdenesCode()
+        {
             int codigo = calcularMax();
 
             return Json(codigo, JsonRequestBehavior.AllowGet);
@@ -65,14 +73,16 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
         /// CALCULA EL NUMERO DE ORDEN MAXIMO DE LA ORDEN
         /// </summary>
         /// <returns></returns>
-        public int calcularMax() {
+        public int calcularMax()
+        {
             //BUSCAR EL VALLOR MAXIMO ALMACENADO DE CODIGO
             var num = (from obj in db.Ordenes
                        select obj.CodigoOrden).DefaultIfEmpty().Max();
 
             int codigo = 1;
 
-            if (num != 0) {
+            if (num != 0)
+            {
                 codigo = num + 1;
             }
 
@@ -84,11 +94,13 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public ActionResult MenuByCategoria(int id) {
+        public ActionResult MenuByCategoria(int id)
+        {
             var menu = from obj in db.Menus.ToList()
                        join i in db.Imagenes.ToList() on obj.ImagenId equals i.Id
                        where obj.CategoriaMenuId == id && obj.EstadoMenu == true
-                       select new {
+                       select new
+                       {
                            Id = obj.Id,
                            Platillo = obj.DescripcionMenu,
                            Precio = obj.PrecioMenu,
@@ -103,11 +115,13 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
         /// </summary>
         /// <param name="id">CATEGORIA ID</param>
         /// <returns></returns>
-        public ActionResult BebidasInventariado(int id) {
+        public ActionResult BebidasInventariado(int id)
+        {
             var menu = from obj in db.Menus.ToList()
                        join i in db.Imagenes.ToList() on obj.ImagenId equals i.Id
-                       where obj.CategoriaMenuId == id && obj.Inventariado && obj.EstadoMenu==true
-                       select new {
+                       where obj.CategoriaMenuId == id && obj.Inventariado && obj.EstadoMenu == true
+                       select new
+                       {
                            Id = obj.Id,
                            Platillo = obj.DescripcionMenu,
                            Precio = obj.PrecioMenu,
@@ -122,7 +136,8 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
         /// </summary>
         /// <param name="identificacion"></param>
         /// <returns></returns>
-        public ActionResult DataClient(string identificacion) {
+        public ActionResult DataClient(string identificacion)
+        {
             string mensaje = "";
             //SE CREA EL OBJETO
             var validacionOrden = (dynamic)null;
@@ -131,7 +146,8 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
             var cliente = (from obj in db.Datos
                            join c in db.Clientes on obj.Id equals c.DatoId
                            where obj.Cedula.Trim() == identificacion.Trim() || c.PasaporteCliente.Trim() == identificacion.Trim()
-                           select new {
+                           select new
+                           {
                                DatoId = obj.Id,
                                ClienteId = c.Id,
                                Nombres = obj.PNombre + " " + obj.PApellido,
@@ -140,7 +156,8 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
                            }).FirstOrDefault();
 
             //SI EXISTE UN REGISTRO DE CLIENTE CON ESE ID
-            if (cliente != null) {
+            if (cliente != null)
+            {
                 //CONSULTO SI EL CLIENTE TIENE ORDENES ACTIVAS (1)
                 validacionOrden = (from obj in db.Clientes
                                    join c in db.Ordenes on obj.Id equals c.ClienteId
@@ -158,7 +175,8 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
         /// MUESTRA LA VISTA DEL DETALLE DE ORDEN
         /// </summary>
         /// <returns></returns>
-        public ActionResult DetalleOrden() {
+        public ActionResult DetalleOrden()
+        {
             return View();
         }
 
@@ -166,19 +184,24 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
         /// MUESTRA LA VISTA DEL DETALLE DE ORDEN
         /// </summary>
         /// <returns></returns>
-        public ActionResult DetalleSalida() {
+        public ActionResult DetalleSalida()
+        {
             return View();
         }
 
-        public async Task<ActionResult> guardarSalida(int Codigo, int MeseroId, DateTime FechaOrden, string detalleOrden) {
-            using (var transact = db.Database.BeginTransaction()) {
-                try {
+        public async Task<ActionResult> guardarSalida(int Codigo, int MeseroId, DateTime FechaOrden, string detalleOrden)
+        {
+            using (var transact = db.Database.BeginTransaction())
+            {
+                try
+                {
                     //DESERIALIZACION DE OBJETO DONDE ESTA EL DETALLE DE LA ORDEN
                     var DetalleOrden = JsonConvert.DeserializeObject<List<DetalleDeOrden>>(detalleOrden);
                     var tipoOrden = db.TiposDeOrden.DefaultIfEmpty(null).FirstOrDefault(t => t.CodigoTipoOrden.ToUpper() == "S01");
 
                     //SI NO EXISTE EL TIPO DE ORDEN CREARLO
-                    if (tipoOrden == null) {
+                    if (tipoOrden == null)
+                    {
                         tipoOrden = new TipoDeOrden();
 
                         tipoOrden.CodigoTipoOrden = "S01";
@@ -211,7 +234,8 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
                     var buscarP = db.Datos.DefaultIfEmpty(null).FirstOrDefault(b => b.Cedula == "000-000000-0000X");
 
                     //SI NO EXISTE LA PLANTILLA, SE MANDA A CREAR
-                    if (buscarP == null) {
+                    if (buscarP == null)
+                    {
                         datoDefault.Cedula = "000-000000-0000X";
                         datoDefault.PNombre = "DEFAULT";
                         datoDefault.PApellido = "USER";
@@ -228,8 +252,10 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
 
                         //ASIGNAR EL ID DE LA PLANTILLA RECIEN CREADA
                         clientePlantilla = clienteDefault;
-                    } else {//YA EXISTE EL REGISTRO DE CLIENTE PLANTILLA
-                            //SE MANDA A BUSCAR PARA OBTENER EL ID DE LA PLANTILLA
+                    }
+                    else
+                    {//YA EXISTE EL REGISTRO DE CLIENTE PLANTILLA
+                     //SE MANDA A BUSCAR PARA OBTENER EL ID DE LA PLANTILLA
                         clientePlantilla = db.Clientes.FirstOrDefault(c => c.DatoId == buscarP.Id);
                     }
 
@@ -241,7 +267,8 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
                     Imagen img = new Imagen();//CREO UNA INSTANCIA DE IMAGEN PARA ALMACENAR EL DEFAULT
 
                     //EN CASO QUE NO EXISTA EL REGISTRO DEFAULT DE LA COMANDA
-                    if (comandaCero == null) {
+                    if (comandaCero == null)
+                    {
                         //SE CREA EL DEFAUTL
                         img.Ruta = "N/A";
                         db.Imagenes.Add(img);
@@ -254,20 +281,25 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
                     db.Ordenes.Add(orden);
 
                     //SI CAMBIOS SE REALIZO BIEN
-                    if (db.SaveChanges() > 0) {
+                    if (db.SaveChanges() > 0)
+                    {
                         //ALMACENAR EL DETALLE DE LA ORDEN
-                        foreach (var item in DetalleOrden) {
+                        foreach (var item in DetalleOrden)
+                        {
                             //RECALCULAR LA EXISTENCIA DEL PRODUCTO DE MENU
                             int existAntigua = await recalcularExist(item.MenuId);
 
-                            if (existAntigua == -1) {//NO HAY EXISTENCIAS
+                            if (existAntigua == -1)
+                            {//NO HAY EXISTENCIAS
                                 completado = false;
                                 var platillo = db.Menus.Find(item.MenuId);
                                 mensaje = "La existencia es menor que la cantidad específicada del producto: " + platillo.DescripcionMenu;
                                 transact.Rollback();
 
                                 return Json(new { success = completado, message = mensaje }, JsonRequestBehavior.AllowGet);
-                            } else if (existAntigua == -2) {//ES PRODUCTO NO CONTROLADO (EJEMPLO AREA COCINA)
+                            }
+                            else if (existAntigua == -2)
+                            {//ES PRODUCTO NO CONTROLADO (EJEMPLO AREA COCINA)
                                 DetalleDeOrden detalleItem = new DetalleDeOrden();//SE CREA LA INSTANCIA DE DETALLE DE ORDEN
 
                                 detalleItem.CantidadOrden = item.CantidadOrden;
@@ -282,11 +314,14 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
                                 //SE ALMACENA CADA ITEM
                                 db.DetallesDeOrden.Add(detalleItem);
                                 completado = db.SaveChanges() > 0 ? true : false;
-                            } else {
+                            }
+                            else
+                            {
                                 //PRODUCTO CONTROLADO
                                 int existencia = existAntigua - item.CantidadOrden;
 
-                                if (existencia < 0) {
+                                if (existencia < 0)
+                                {
                                     //NO ES POSIBLE ALMACENAR EL DETALLE
                                     completado = false;
                                     var platillo = db.Menus.Find(item.MenuId);
@@ -294,7 +329,9 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
                                     transact.Rollback();
 
                                     return Json(new { success = completado, message = mensaje }, JsonRequestBehavior.AllowGet);
-                                } else {
+                                }
+                                else
+                                {
                                     DetalleDeOrden detalleItem = new DetalleDeOrden();//SE CREA LA INSTANCIA DE DETALLE DE ORDEN
 
                                     detalleItem.CantidadOrden = item.CantidadOrden;
@@ -316,11 +353,15 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
                     }
 
                     transact.Commit();
-                } catch (DbEntityValidationException dbEx) {
+                }
+                catch (DbEntityValidationException dbEx)
+                {
 
                     //CAPTURAR ERRORES DE VALIDACION
-                    foreach (var validationErrors in dbEx.EntityValidationErrors) {
-                        foreach (var validationError in validationErrors.ValidationErrors) {
+                    foreach (var validationErrors in dbEx.EntityValidationErrors)
+                    {
+                        foreach (var validationError in validationErrors.ValidationErrors)
+                        {
                             System.Console.WriteLine("Property: {0} Error: {1}", validationError.PropertyName, validationError.ErrorMessage);
                         }
                     }
@@ -342,16 +383,20 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
         /// <param name="DetalleOrden"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ActionResult> Create(int Codigo, int MeseroId, int ClienteId, DateTime FechaOrden, string detalleOrden, int mesaId) {
+        public async Task<ActionResult> Create(int Codigo, int MeseroId, int ClienteId, DateTime FechaOrden, string detalleOrden, int mesaId)
+        {
 
-            using (var transact = db.Database.BeginTransaction()) {
-                try {
+            using (var transact = db.Database.BeginTransaction())
+            {
+                try
+                {
                     //DESERIALIZACION DE OBJETO DONDE ESTA EL DETALLE DE LA ORDEN
                     var DetalleOrden = JsonConvert.DeserializeObject<List<DetalleDeOrden>>(detalleOrden);
                     var tipoOrden = db.TiposDeOrden.DefaultIfEmpty(null).FirstOrDefault(t => t.CodigoTipoOrden.ToUpper() == "V01");
 
                     //SI NO EXISTE EL TIPO DE ORDEN CREARLO
-                    if (tipoOrden == null) {
+                    if (tipoOrden == null)
+                    {
                         tipoOrden = new TipoDeOrden();
 
                         tipoOrden.CodigoTipoOrden = "V01";
@@ -381,11 +426,13 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
                     orden.MesaId = mesaId;
 
                     //SI EL CLIENTE ES VISITANTE SE MANDA EL CLIENTE POR DEFAULT
-                    if (ClienteId == 0) {
+                    if (ClienteId == 0)
+                    {
                         var buscarP = db.Datos.DefaultIfEmpty(null).FirstOrDefault(b => b.Cedula == "000-000000-0000X");
 
                         //SI NO EXISTE LA PLANTILLA, SE MANDA A CREAR
-                        if (buscarP == null) {
+                        if (buscarP == null)
+                        {
                             datoDefault.Cedula = "000-000000-0000X";
                             datoDefault.PNombre = "DEFAULT";
                             datoDefault.PApellido = "USER";
@@ -402,7 +449,9 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
 
                             //ASIGNAR EL ID DE LA PLANTILLA RECIEN CREADA
                             clientePlantilla = clienteDefault;
-                        } else {//YA EXISTE EL REGISTRO DE CLIENTE PLANTILLA
+                        }
+                        else
+                        {//YA EXISTE EL REGISTRO DE CLIENTE PLANTILLA
                             //SE MANDA A BUSCAR PARA OBTENER EL ID DE LA PLANTILLA
                             clientePlantilla = db.Clientes.FirstOrDefault(c => c.DatoId == buscarP.Id);
                         }
@@ -410,7 +459,9 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
                         //ALMACENO EL REGISTRO CON EL CLIENTE DE VISITANTE (PLANTILLA DEFAULT)
                         orden.ClienteId = clientePlantilla.Id;
 
-                    } else {
+                    }
+                    else
+                    {
                         //SI EL CLIENTE ES HUESPED
                         orden.ClienteId = ClienteId;
                     }
@@ -420,7 +471,8 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
                     Imagen img = new Imagen();//CREO UNA INSTANCIA DE IMAGEN PARA ALMACENAR EL DEFAULT
 
                     //EN CASO QUE NO EXISTA EL REGISTRO DEFAULT DE LA COMANDA
-                    if (comandaCero == null) {
+                    if (comandaCero == null)
+                    {
                         //SE CREA EL DEFAUTL
                         img.Ruta = "N/A";
                         db.Imagenes.Add(img);
@@ -433,20 +485,25 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
                     db.Ordenes.Add(orden);
 
                     //SI CAMBIOS SE REALIZO BIEN
-                    if (db.SaveChanges() > 0) {
+                    if (db.SaveChanges() > 0)
+                    {
                         //ALMACENAR EL DETALLE DE LA ORDEN
-                        foreach (var item in DetalleOrden) {
+                        foreach (var item in DetalleOrden)
+                        {
                             //RECALCULAR LA EXISTENCIA DEL PRODUCTO DE MENU
                             int existAntigua = await recalcularExist(item.MenuId);
 
-                            if (existAntigua == -1) {//NO HAY EXISTENCIAS
+                            if (existAntigua == -1)
+                            {//NO HAY EXISTENCIAS
                                 completado = false;
                                 var platillo = db.Menus.Find(item.MenuId);
                                 mensaje = "Uno o varios productos que son ingredientes de " + platillo.DescripcionMenu + " no poseen existencias";
                                 transact.Rollback();
 
                                 return Json(new { success = completado, message = mensaje }, JsonRequestBehavior.AllowGet);
-                            } else if (existAntigua == -2) {//ES PRODUCTO NO CONTROLADO (EJEMPLO AREA COCINA)
+                            }
+                            else if (existAntigua == -2)
+                            {//ES PRODUCTO NO CONTROLADO (EJEMPLO AREA COCINA)
                                 DetalleDeOrden detalleItem = new DetalleDeOrden();//SE CREA LA INSTANCIA DE DETALLE DE ORDEN
 
                                 detalleItem.CantidadOrden = item.CantidadOrden;
@@ -461,11 +518,14 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
                                 //SE ALMACENA CADA ITEM
                                 db.DetallesDeOrden.Add(detalleItem);
                                 completado = db.SaveChanges() > 0 ? true : false;
-                            } else {
+                            }
+                            else
+                            {
                                 //PRODUCTO CONTROLADO
                                 int existencia = existAntigua - item.CantidadOrden;
 
-                                if (existencia < 0) {
+                                if (existencia < 0)
+                                {
                                     //NO ES POSIBLE ALMACENAR EL DETALLE
                                     completado = false;
                                     var platillo = db.Menus.Find(item.MenuId);
@@ -473,7 +533,9 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
                                     transact.Rollback();
 
                                     return Json(new { success = completado, message = mensaje }, JsonRequestBehavior.AllowGet);
-                                } else {
+                                }
+                                else
+                                {
                                     DetalleDeOrden detalleItem = new DetalleDeOrden();//SE CREA LA INSTANCIA DE DETALLE DE ORDEN
 
                                     detalleItem.CantidadOrden = item.CantidadOrden;
@@ -496,7 +558,9 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
 
                     transact.Commit();
                     AddNewOrder.Preppend(/*obj*/);//CONEXION DE WEBSOCKETS
-                } catch (Exception) {
+                }
+                catch (Exception)
+                {
                     mensaje = "Error al almacenar orden";
                     transact.Rollback();
                 }//FIN TRY-CATCH
@@ -509,13 +573,15 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
         /// </summary>
         /// <param name="LoginId"></param>
         /// <returns></returns>
-        public ActionResult LoggedUser(string LoginId) {
+        public ActionResult LoggedUser(string LoginId)
+        {
             var user = context.Users.FirstOrDefault(u => u.Id == LoginId);
 
             var data = (from obj in db.Datos
                         join m in db.Meseros on obj.Id equals m.DatoId
                         where m.Id == user.PeopleId
-                        select new {
+                        select new
+                        {
                             MeseroId = m.Id,
                             Nombre = obj.PNombre + " " + obj.PApellido
                         }).FirstOrDefault();
@@ -528,7 +594,8 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
         /// RETORNA LA VISTA DE ORDENES
         /// </summary>
         /// <returns></returns>
-        public ActionResult VerOrdenes(string mensaje = "") {
+        public ActionResult VerOrdenes(string mensaje = "")
+        {
             ViewBag.Message = mensaje;
 
             return View();
@@ -538,7 +605,8 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
         /// MUESTRA LA VISTA DE LA COMANDA
         /// </summary>
         /// <returns></returns>
-        public ActionResult Comanda(int OrderId) {
+        public ActionResult Comanda(int OrderId)
+        {
             ViewBag.OrdenId = OrderId;//ENVIAR EL ID DE LA ORDEN A MOSTRAR
 
             return View();
@@ -548,10 +616,12 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
         /// MUESTRA LA LISTA DE TODAS LAS ORDENES
         /// </summary>
         /// <returns></returns>
-        public ActionResult Ordenes(int empleadoId, string EmpleadoRol) {
+        public ActionResult Ordenes(int empleadoId, string EmpleadoRol)
+        {
             var orden = (dynamic)null;
             //OBTENGO TODAS LAS ORDENES REALIZADAS POR EL MESERO LOGGEADO
-            if (EmpleadoRol == "Mesero") {
+            if (EmpleadoRol == "Mesero")
+            {
                 orden = (from obj in db.Ordenes.ToList()
                          join c in db.Clientes.ToList() on obj.ClienteId equals c.Id
                          join d in db.Datos.ToList() on c.DatoId equals d.Id
@@ -559,14 +629,17 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
                          join m in db.Mesas.ToList() on obj.MesaId equals m.Id
                          where obj.EstadoOrden == 1 && obj.MeseroId == empleadoId && t.CodigoTipoOrden == "V01"
                          orderby obj.FechaOrden.ToLongTimeString() ascending
-                         select new {
+                         select new
+                         {
                              OrdenId = obj.Id,
                              CodigoOrden = obj.CodigoOrden,
                              HoraOrden = ConvertHour(obj.FechaOrden.Hour, obj.FechaOrden.Minute),
                              Cliente = d.PNombre.ToUpper() != "DEFAULT" ? d.PNombre + " " + d.PApellido : "N/A",
                              Mesa = m.DescripcionMesa
                          }).ToList();
-            } else if (EmpleadoRol == "Cocinero") {
+            }
+            else if (EmpleadoRol == "Cocinero")
+            {
                 //OBTENGO TODAS LAS ORDENES CON PLATILLO PENDIENTES
                 orden = (from obj in db.Ordenes.ToList()
                          join det in db.DetallesDeOrden.ToList() on obj.Id equals det.OrdenId
@@ -579,7 +652,8 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
                          join m in db.Mesas.ToList() on obj.MesaId equals m.Id
                          where det.EstadoDetalleOrden == false && bod.DescripcionBodega.ToUpper() == "COCINA" && t.CodigoTipoOrden == "V01"
                          orderby obj.FechaOrden.ToLongTimeString() ascending
-                         select new {
+                         select new
+                         {
                              OrdenId = obj.Id,
                              CodigoOrden = obj.CodigoOrden,
                              HoraOrden = ConvertHour(obj.FechaOrden.Hour, obj.FechaOrden.Minute),
@@ -591,7 +665,9 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
                                        where obj.Id == o.Id
                                        select a.PNombre + " " + a.PApellido).FirstOrDefault()
                          }).Distinct().ToList();
-            } else if (EmpleadoRol == "Bartender") {
+            }
+            else if (EmpleadoRol == "Bartender")
+            {
                 //OBTENGO TODAS LAS ORDENES CON BEBIDAS PENDIENTES
                 orden = (from obj in db.Ordenes.ToList()
                          join det in db.DetallesDeOrden.ToList() on obj.Id equals det.OrdenId
@@ -604,7 +680,8 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
                          join m in db.Mesas.ToList() on obj.MesaId equals m.Id
                          where det.EstadoDetalleOrden == false && bod.DescripcionBodega.ToUpper() == "BAR" && t.CodigoTipoOrden == "V01"
                          orderby obj.FechaOrden.ToLongTimeString() ascending
-                         select new {
+                         select new
+                         {
                              OrdenId = obj.Id,
                              CodigoOrden = obj.CodigoOrden,
                              HoraOrden = ConvertHour(obj.FechaOrden.Hour, obj.FechaOrden.Minute),
@@ -616,7 +693,9 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
                                        where obj.Id == o.Id
                                        select a.PNombre + " " + a.PApellido).FirstOrDefault()
                          }).Distinct().ToList();
-            } else {
+            }
+            else
+            {
                 orden = (from obj in db.Ordenes.ToList()
                          join c in db.Clientes.ToList() on obj.ClienteId equals c.Id
                          join d in db.Datos.ToList() on c.DatoId equals d.Id
@@ -624,7 +703,8 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
                          join m in db.Mesas.ToList() on obj.MesaId equals m.Id
                          where obj.EstadoOrden == 1 && t.CodigoTipoOrden == "V01"
                          orderby obj.FechaOrden.ToLongTimeString() ascending
-                         select new {
+                         select new
+                         {
                              OrdenId = obj.Id,
                              CodigoOrden = obj.CodigoOrden,
                              HoraOrden = ConvertHour(obj.FechaOrden.Hour, obj.FechaOrden.Minute),
@@ -647,7 +727,8 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
         /// </summary>
         /// <param name="OrderId"></param>
         /// <returns></returns>
-        public ActionResult Edit(int OrderId) {
+        public ActionResult Edit(int OrderId)
+        {
             ViewBag.OrdenId = OrderId;//ENVIAR EL ID DE LA ORDEN A MOSTRAR
             ViewBag.CategoriaId = new SelectList(db.CategoriasMenu, "Id", "DescripcionCategoriaMenu");
 
@@ -659,7 +740,8 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
         /// </summary>
         /// <param name="orderId"></param>
         /// <returns></returns>
-        public ActionResult getOrderAndDetails(int orderId) {
+        public ActionResult getOrderAndDetails(int orderId)
+        {
 
             //BUSCAR EL ENCABEZADO
             var OrderHead = (from obj in db.Ordenes.ToList()
@@ -667,7 +749,8 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
                              join d in db.Datos.ToList() on c.DatoId equals d.Id
                              join m in db.Mesas.ToList() on obj.MesaId equals m.Id
                              where obj.Id == orderId
-                             select new {
+                             select new
+                             {
                                  Id = obj.Id,
                                  Codigo = obj.CodigoOrden,
                                  Fecha = (obj.FechaOrden.Day < 10 ? "0" + obj.FechaOrden.Day.ToString() : obj.FechaOrden.Day.ToString()) + "/" +
@@ -693,7 +776,8 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
                                 join d in db.DetallesDeOrden on obj.Id equals d.OrdenId
                                 join p in db.Menus on d.MenuId equals p.Id
                                 where d.OrdenId == orderId
-                                select new {
+                                select new
+                                {
                                     PlatilloId = d.MenuId,
                                     Platillo = p.DescripcionMenu.Trim(),
                                     PrecioUnitario = d.PrecioOrden,
@@ -712,15 +796,16 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
         /// <param name="Cliente"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult SendEmail(string Email, int orderId) {
-            if (Email == "") {
+        public ActionResult SendEmail(string Email, int orderId)
+        {
+            if (Email == "")
+            {
                 mensaje = "Ingrese el correo del cliente";
                 return Json(new { success = completado, message = mensaje }, JsonRequestBehavior.AllowGet);
             }
 
-            string emailHotel = "proyectoshotel2020@gmail.com";
-            string passwordHotel = "bxqalmibjgxzjqux";
-            //string passwordHotel = "Calabazas#sin.Nombre2020";
+            string emailHotel = ConfigurationManager.AppSettings["EmailHotel"];
+            string passwordHotel = ConfigurationManager.AppSettings["PasswordHotel"];
 
             var orden = db.Ordenes.FirstOrDefault(w => w.Id == orderId);
             var cliente = db.Clientes.FirstOrDefault(w => w.Id == orden.ClienteId && w.EmailCliente != "defaultuser@xalli.com");
@@ -747,7 +832,8 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
 
             encabezadoEmail(ref code, ref bodyMessage, orderId);
 
-            try {
+            try
+            {
                 MailMessage correo = new MailMessage();
                 correo.From = new MailAddress(emailHotel);
                 correo.To.Add(Email);
@@ -767,7 +853,9 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
                 completado = true;
                 mensaje = "Correo enviado correctamente";
 
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 mensaje = ex.Message;
             }
 
@@ -782,18 +870,26 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
         /// <param name="meseroName"></param>
         /// <param name="fechaOrden"></param>
         /// <param name="bodyMessage"></param>
-        public void encabezadoEmail(ref string code, ref string bodyMessage, int orderId) {
+        public void encabezadoEmail(ref string code, ref string bodyMessage, int orderId)
+        {
             var orden = db.Ordenes.Join(db.Meseros, o => o.MeseroId, m => m.Id, (o, m) => new { o, m })
                                 .Join(db.Datos, mes => mes.m.DatoId, d => d.Id, (mes, d) => new { mes, d })
                                 .Where(w => w.mes.o.Id == orderId).FirstOrDefault();
 
-            if (orden.mes.o.CodigoOrden < 10) {
+            if (orden.mes.o.CodigoOrden < 10)
+            {
                 code = "000" + orden.mes.o.CodigoOrden;
-            } else if (orden.mes.o.CodigoOrden >= 10 || orden.mes.o.CodigoOrden < 100) {
+            }
+            else if (orden.mes.o.CodigoOrden >= 10 || orden.mes.o.CodigoOrden < 100)
+            {
                 code = "00" + orden.mes.o.CodigoOrden;
-            } else if (orden.mes.o.CodigoOrden >= 100 || orden.mes.o.CodigoOrden < 1000) {
+            }
+            else if (orden.mes.o.CodigoOrden >= 100 || orden.mes.o.CodigoOrden < 1000)
+            {
                 code = "0" + orden.mes.o.CodigoOrden;
-            } else {
+            }
+            else
+            {
                 code = (orden.mes.o.CodigoOrden).ToString();
             }
 
@@ -818,7 +914,8 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
                                 "</thead>" +
                                 "<tbody>";
 
-            foreach (var item in detalleOrden) {
+            foreach (var item in detalleOrden)
+            {
                 var subtotal = item.d.CantidadOrden * item.d.PrecioOrden;
 
                 //AGREGAR EL DETALLE DE LA ORDEN
@@ -842,23 +939,30 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
         /// <param name="detalleOrden"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ActionResult> EditOrder(int Codigo, DateTime FechaOrden, int EstadoOrden, string detalleOrden) {
+        public async Task<ActionResult> EditOrder(int Codigo, DateTime FechaOrden, int EstadoOrden, string detalleOrden)
+        {
             //BUSCAR LA ORDEN
             var Orden = db.Ordenes.DefaultIfEmpty(null).FirstOrDefault(o => o.CodigoOrden == Codigo);
             //DESERIALIZACION DE OBJETO DEL DETALLE (EN CASO DE QUE HAYA, EN CASO CONTRARIO SALE VACIO)
             var DetalleOrden = JsonConvert.DeserializeObject<List<DetalleDeOrden>>(detalleOrden);
 
-            if (Orden != null) {
-                using (var transact = db.Database.BeginTransaction()) {
-                    try {
+            if (Orden != null)
+            {
+                using (var transact = db.Database.BeginTransaction())
+                {
+                    try
+                    {
                         //SI NO LLEGA NINGUN OBJETO PARA EL DETALLE DE ORDEN
-                        if (DetalleOrden == null) {
+                        if (DetalleOrden == null)
+                        {
                             //MANDO EL ESTADO DE LA ORDEN
                             Orden.EstadoOrden = EstadoOrden;
                             db.Entry(Orden).State = EntityState.Modified;
                             completado = db.SaveChanges() > 0 ? true : false;
                             mensaje = completado ? "Orden finalizada" : "Error al almacenar";
-                        } else {
+                        }
+                        else
+                        {
                             Orden.FechaOrden = Convert.ToDateTime(FechaOrden);//CAMBIO LA HORA DEL PEDIDO
                             Orden.EstadoOrden = EstadoOrden;//MANDO EL ESTADO DE LA ORDEN
                             //1 ABIERTO
@@ -867,22 +971,27 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
                             db.Entry(Orden).State = EntityState.Modified;
                             completado = db.SaveChanges() > 0 ? true : false;
 
-                            if (completado) {
+                            if (completado)
+                            {
                                 //SE PROCEDE A ALMACENAR LOS NUEVOS PLATILLOS/BEBIDAS
                                 //var details = db.DetallesDeOrden.FirstOrDefault(d => d.OrdenId == Orden.Id);
                                 //RECORRO LA LISTA DE LOS NUEVOS PEDIDOS
-                                foreach (var item in DetalleOrden) {
+                                foreach (var item in DetalleOrden)
+                                {
                                     //RECALCULAR LA EXISTENCIA DEL PRODUCTO DE MENU
                                     int existAntigua = await recalcularExist(item.MenuId);
 
-                                    if (existAntigua == -1) {//NO HAY EXISTENCIAS
+                                    if (existAntigua == -1)
+                                    {//NO HAY EXISTENCIAS
                                         completado = false;
                                         var platillo = db.Menus.Find(item.MenuId);
                                         mensaje = "Uno o varios productos que son ingredientes de " + platillo.DescripcionMenu + " no poseen existencias";
                                         transact.Rollback();
 
                                         return Json(new { success = completado, message = mensaje }, JsonRequestBehavior.AllowGet);
-                                    } else if (existAntigua == -2) {//ES PRODUCTO NO CONTROLADO (EJEMPLO AREA COCINA)
+                                    }
+                                    else if (existAntigua == -2)
+                                    {//ES PRODUCTO NO CONTROLADO (EJEMPLO AREA COCINA)
                                         DetalleDeOrden detalleItem = new DetalleDeOrden();//SE CREA LA INSTANCIA DE DETALLE DE ORDEN
 
                                         detalleItem.CantidadOrden = item.CantidadOrden;
@@ -897,11 +1006,14 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
                                         //SE ALMACENA CADA ITEM
                                         db.DetallesDeOrden.Add(detalleItem);
                                         completado = db.SaveChanges() > 0 ? true : false;
-                                    } else {
+                                    }
+                                    else
+                                    {
                                         //PRODUCTO CONTROLADO
                                         int existencia = existAntigua - item.CantidadOrden;
 
-                                        if (existencia < 0) {
+                                        if (existencia < 0)
+                                        {
                                             //NO ES POSIBLE ALMACENAR EL DETALLE
                                             completado = false;
                                             var platillo = db.Menus.Find(item.MenuId);
@@ -909,7 +1021,9 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
                                             transact.Rollback();
 
                                             return Json(new { success = completado, message = mensaje }, JsonRequestBehavior.AllowGet);
-                                        } else {
+                                        }
+                                        else
+                                        {
                                             DetalleDeOrden detalleItem = new DetalleDeOrden();//SE CREA LA INSTANCIA DE DETALLE DE ORDEN
 
                                             detalleItem.CantidadOrden = item.CantidadOrden;
@@ -933,7 +1047,9 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
                         }
                         transact.Commit();
                         AddNewOrder.Preppend(/*obj*/);//CONEXION DE WEBSOCKETS
-                    } catch (Exception) {
+                    }
+                    catch (Exception)
+                    {
                         transact.Rollback();
                         mensaje = "Error al almacenar";
                     }//FIN TRY-CATCH
@@ -943,7 +1059,8 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
             return Json(new { success = completado, message = mensaje }, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult Preparacion(int ordenId, int rol) {
+        public ActionResult Preparacion(int ordenId, int rol)
+        {
             ViewBag.OrdenId = ordenId;//ENVIAR EL ID DE LA ORDEN A MOSTRAR
             ViewBag.role = rol == 1 ? "Bar" : "Cocina";
 
@@ -956,7 +1073,8 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
         /// <param name="area">RECIBE SI ES COCINA O BAR</param>
         /// <param name="ordenId">ID DE LA ORDEN</param>
         /// <returns></returns>
-        public ActionResult getItemsPrep(string area, int ordenId) {
+        public ActionResult getItemsPrep(string area, int ordenId)
+        {
             /*
               select o.CodigoOrden,
 						CONVERT(varchar, o.FechaOrden,3) as fecha, 
@@ -990,7 +1108,8 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
                               join dat in db.Datos.ToList() on cli.DatoId equals dat.Id
                               join mes in db.Mesas.ToList() on ord.MesaId equals mes.Id
                               where det.OrdenId == ordenId && det.EstadoDetalleOrden == false && bod.DescripcionBodega.ToUpper() == area.ToUpper()
-                              select new {
+                              select new
+                              {
                                   Id = ord.Id,
                                   Codigo = ord.CodigoOrden,
                                   Fecha = ord.FechaOrden.ToShortDateString(),
@@ -1012,7 +1131,8 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
                           join bod in db.Bodegas.ToList() on cat.BodegaId equals bod.Id
                           where det.OrdenId == ordenId && det.EstadoDetalleOrden == false && bod.DescripcionBodega.ToUpper() == area.ToUpper()
                           group new { det, menu } by new { menu.DescripcionMenu, det.NotaDetalleOrden } into grouped
-                          select new {
+                          select new
+                          {
                               Cantidad = grouped.Sum(s => s.det.CantidadOrden),//SUMO LA CANTIDAD SOLICITADA EN CASO DE QUE SEA EL MISMO PRODUCTO
                               Platillo = grouped.Key.DescripcionMenu,
                               Nota = grouped.Key.NotaDetalleOrden,
@@ -1036,14 +1156,18 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
         /// </summary>
         /// <param name="detailsId">CADENA DE IDS DE PRODUCTOS A ATENDER</param>
         /// <returns></returns>
-        public ActionResult EditOrderDetails(string detailsId) {
-            using (var transact = db.Database.BeginTransaction()) {
-                try {
+        public ActionResult EditOrderDetails(string detailsId)
+        {
+            using (var transact = db.Database.BeginTransaction())
+            {
+                try
+                {
                     //CONVIERTO LA CADENA A UN ARRAY DE STRING
                     var detalle = detailsId.Split(',');
 
                     //RECORRO EL ARRAY
-                    foreach (var item in detalle) {
+                    foreach (var item in detalle)
+                    {
                         var deta = int.Parse(item);//PARSEO DE STRING A ENTERO
                         //BUSCO EL ID DEL DETALLE DE PRODUCTO SOLICITADO
                         DetalleDeOrden detalleDeOrden = db.DetallesDeOrden.FirstOrDefault(c => c.Id == deta);
@@ -1055,7 +1179,9 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
 
                     mensaje = completado ? "Almacenado correctamente" : "Error al almacenar";
                     transact.Commit();
-                } catch (Exception) {
+                }
+                catch (Exception)
+                {
                     mensaje = "Error al almacenar";
                     transact.Rollback();
                 }
@@ -1068,7 +1194,8 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
         /// CONVERTIR LA HORA DE 24HRS A HORA LOCAL
         /// </summary>
         /// <returns></returns>
-        public string ConvertHour(int Hora, int Minuto) {
+        public string ConvertHour(int Hora, int Minuto)
+        {
             //CONVIERTE LA HORA DE FORMATO 24 A FORMATO 12
             int hour = (Hora + 11) % 12 + 1;
             string Meridiano = Hora > 12 ? "PM" : "AM";
@@ -1085,12 +1212,15 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
         /// </summary>
         /// <param name="ordenId"></param>
         /// <returns></returns>
-        public ActionResult CerrarComanda(int ordenId) {
+        public ActionResult CerrarComanda(int ordenId)
+        {
             //BSUCA LA ORDEN
             var cerrar = db.Ordenes.FirstOrDefault(w => w.Id == ordenId);
 
-            using (var transact = db.Database.BeginTransaction()) {
-                try {
+            using (var transact = db.Database.BeginTransaction())
+            {
+                try
+                {
                     cerrar.EstadoOrden = 2;//TERMINAR LA ORDEN
                     db.Entry(cerrar).State = EntityState.Modified;
 
@@ -1098,7 +1228,9 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
                     mensaje = completado ? "Cerrado correctamente" : "Error al cerrar";
 
                     transact.Commit();
-                } catch (Exception) {
+                }
+                catch (Exception)
+                {
                     mensaje = "Error al cerrar";
                     transact.Rollback();
                 }
@@ -1110,16 +1242,19 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
         /// GENERA UNA LISTA DE LAS MESAS DISPONIBLES
         /// </summary>
         /// <returns></returns>
-        public List<MesasClass> ListaMesas() {
+        public List<MesasClass> ListaMesas()
+        {
             /*
             SELECT M.DescripcionMesa		
             FROM ORD.Mesas M
             WHERE M.EstadoMesa=1 AND M.Id not in (SELECT o.MesaId FROM ORD.Ordenes O WHERE O.EstadoOrden=1) 
              */
             var mesas = (from obj in db.Mesas.ToList()
-                         where obj.EstadoMesa == true && !(from ord in db.Ordenes.ToList() where ord.EstadoOrden == 1
+                         where obj.EstadoMesa == true && !(from ord in db.Ordenes.ToList()
+                                                           where ord.EstadoOrden == 1
                                                            select ord.MesaId).Contains(obj.Id)
-                         select new MesasClass {
+                         select new MesasClass
+                         {
                              Id = obj.Id,
                              Descripcion = obj.DescripcionMesa
                          }).ToList();
@@ -1127,12 +1262,14 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
             return mesas;
         }
 
-        public class MesasClass {
+        public class MesasClass
+        {
             public int Id { get; set; }
             public string Descripcion { get; set; }
         }
 
-        public void RetornarAlgoFelix() {
+        public void RetornarAlgoFelix()
+        {
 
             var primero = db.Ordenes.FirstOrDefault();
 
@@ -1141,7 +1278,8 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
             db.Entry(primero).State = EntityState.Modified;
             db.SaveChanges();
 
-            dynamic obj = new {
+            dynamic obj = new
+            {
                 NoOrden = "1",
                 Hora = "10 00 AM",
                 Cliente = "Felix Hdez"
@@ -1149,14 +1287,16 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
         }
 
         //si el menuid es de bar o no 
-        public async Task<bool> esDeBar(int id) {
+        public async Task<bool> esDeBar(int id)
+        {
             string Bodega = await (from c in db.CategoriasMenu
                                    join b in db.Bodegas on c.BodegaId equals b.Id
                                    join m in db.Menus on c.Id equals m.CategoriaMenuId
                                    where m.Id == id
                                    select b.CodigoBodega).DefaultIfEmpty().FirstOrDefaultAsync();
 
-            if (Bodega == "B01") {
+            if (Bodega == "B01")
+            {
                 return true;
             }
 
@@ -1169,13 +1309,15 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
         /// </summary>
         /// <param name="id">ID DE MENU</param>
         /// <returns></returns>
-        public async Task<ActionResult> existencia(int id) {
+        public async Task<ActionResult> existencia(int id)
+        {
             bool completo = true;
             double entradas = 0;
             int salidas = 0, existencia = 0;
 
             //SI LA CATEGORIA DEL PLATILLO PERTENECE A BAR
-            if (await esDeBar(id)) {
+            if (await esDeBar(id))
+            {
 
                 //LISTAR TODOS LOS PRODUCTOS QUE CONFORMAN EL MENU
                 var idProd = (from m in db.Menus
@@ -1184,23 +1326,30 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
                               select i.ProductoId).ToList();
 
                 //EN ESTA CONDICION SE SACARA LA EXISTENCIA EN NUMEROS-EN CASO QUE SEA
-                if (idProd.Count == 1) {
+                if (idProd.Count == 1)
+                {
                     ExistEntrada(idProd[0], ref entradas);//OBTENEMOS LA ENTRADA DEL PRODUCTO
 
-                    if (entradas == 0) {
+                    if (entradas == 0)
+                    {
                         mensaje = "No disponible";//NO TIENE ENTRADAS, NO HAY EXISTENCIA
                         existencia = -1;
-                    } else {
+                    }
+                    else
+                    {
                         //BUSCAR LA BEBIDA PARA SABER SI ES TRAGO O BOTELLA
                         var menu = db.Menus.Find(id);
 
                         //SI HAY ENTRADAS BUSCAR LAS SALIDAS
                         ExistSalidas(idProd[0], ref salidas);//OBTENEMOS LAS SALIDAS DEL PRODUCTO                    
 
-                        if (menu.Inventariado) {
+                        if (menu.Inventariado)
+                        {
                             existencia = (int)entradas - salidas;//CALCULO DE LA EXISTENCIA
                             mensaje = existencia.ToString();//MANDO LA CANTIDAD DE EXISTENCIA DEL PRODUCTO
-                        } else {
+                        }
+                        else
+                        {
                             //SI ES UN TRAGO
                             existencia = (int)entradas - salidas;//CALCULO DE LA EXISTENCIA
                             mensaje = existencia.ToString();//MANDO LA CANTIDAD DE EXISTENCIA DEL PRODUCTO
@@ -1209,27 +1358,35 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
                             existencia = -2;
                         }
                     }
-                } else {
+                }
+                else
+                {
                     int w = 0;//CONTADOR DE WHILE
 
                     //RECORRER LA LISTA DE LOS INGREDIENTES Y COMRPOBAR QUE TENGA ENTRADAS DEL AREA DE BODEGA
-                    while (w < idProd.Count && completo) {
+                    while (w < idProd.Count && completo)
+                    {
                         salidas = 0;
                         entradas = 0;
 
-                        if (ExistEntrada(idProd[w], ref entradas)) {//SI LAS ENTRADAS PERTENECEN AL AREA DE BAR
-                                                                    //SI EL PRODUCTO ES DE BAR
-                            if (entradas > 0) {//SI LAS ENTRADAS FUERON MAYOR A 0
+                        if (ExistEntrada(idProd[w], ref entradas))
+                        {//SI LAS ENTRADAS PERTENECEN AL AREA DE BAR
+                         //SI EL PRODUCTO ES DE BAR
+                            if (entradas > 0)
+                            {//SI LAS ENTRADAS FUERON MAYOR A 0
                                 ExistSalidas(idProd[w], ref salidas);//CALCULAR LAS SALIDAS
 
                                 existencia = (int)entradas - salidas;//CALCULO LA EXISTENCIA
 
                                 //NO HAY UN PRODUCTO EN EXISTENCIA
-                                if (existencia == 0) {
+                                if (existencia == 0)
+                                {
                                     completo = false;
                                     mensaje = "Productos faltantes";
                                     existencia = -1;//NO PUEDE SELECCIONAR PARA ORDENAR
-                                } else {
+                                }
+                                else
+                                {
                                     mensaje = "Disponible";
                                     existencia = -2;//PUEDE SELECCIONAR PARA ORDENAR
                                 }
@@ -1239,7 +1396,9 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
                         w++;
                     }
                 }//FIN IF-ELSE
-            } else {
+            }
+            else
+            {
                 //PERTENECE A COCINA
                 mensaje = "No inventariado";
                 existencia = -2;
@@ -1255,13 +1414,15 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
             return Json(new { mensaje, existencia }, JsonRequestBehavior.AllowGet);
         }
 
-        public async Task<int> recalcularExist(int id) {
+        public async Task<int> recalcularExist(int id)
+        {
             bool completo = true;
             double entradas = 0;
             int salidas = 0, existencia = 0;
 
             //SI LA CATEGORIA DEL PLATILLO PERTENECE A BAR
-            if (await esDeBar(id)) {
+            if (await esDeBar(id))
+            {
 
                 //LISTAR TODOS LOS PRODUCTOS QUE CONFORMAN EL MENU
                 var idProd = (from m in db.Menus
@@ -1270,21 +1431,28 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
                               select i.ProductoId).ToList();
 
                 //EN ESTA CONDICION SE SACARA LA EXISTENCIA EN NUMEROS-EN CASO QUE SEA
-                if (idProd.Count == 1) {
+                if (idProd.Count == 1)
+                {
                     ExistEntrada(idProd[0], ref entradas);//OBTENEMOS LA ENTRADA DEL PRODUCTO
 
-                    if (entradas == 0) {
+                    if (entradas == 0)
+                    {
                         existencia = -1;
-                    } else {
+                    }
+                    else
+                    {
                         //BUSCAR LA BEBIDA PARA SABER SI ES TRAGO O BOTELLA
                         var menu = db.Menus.Find(id);
 
                         //SI HAY ENTRADAS BUSCAR LAS SALIDAS
                         ExistSalidas(idProd[0], ref salidas);//OBTENEMOS LAS SALIDAS DEL PRODUCTO                    
 
-                        if (menu.Inventariado) {
+                        if (menu.Inventariado)
+                        {
                             existencia = (int)entradas - salidas;//CALCULO DE LA EXISTENCIA
-                        } else {
+                        }
+                        else
+                        {
                             //SI ES UN TRAGO
                             existencia = (int)entradas - salidas;//CALCULO DE LA EXISTENCIA
 
@@ -1292,26 +1460,34 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
                             existencia = -2;
                         }
                     }
-                } else {
+                }
+                else
+                {
                     int w = 0;//CONTADOR DE WHILE
 
                     //RECORRER LA LISTA DE LOS INGREDIENTES Y COMRPOBAR QUE TENGA ENTRADAS DEL AREA DE BODEGA
-                    while (w < idProd.Count && completo) {
+                    while (w < idProd.Count && completo)
+                    {
                         salidas = 0;
                         entradas = 0;
 
-                        if (ExistEntrada(idProd[w], ref entradas)) {//SI LAS ENTRADAS PERTENECEN AL AREA DE BAR
-                                                                    //SI EL PRODUCTO ES DE BAR
-                            if (entradas > 0) {//SI LAS ENTRADAS FUERON MAYOR A 0
+                        if (ExistEntrada(idProd[w], ref entradas))
+                        {//SI LAS ENTRADAS PERTENECEN AL AREA DE BAR
+                         //SI EL PRODUCTO ES DE BAR
+                            if (entradas > 0)
+                            {//SI LAS ENTRADAS FUERON MAYOR A 0
                                 ExistSalidas(idProd[w], ref salidas);//CALCULAR LAS SALIDAS
 
                                 existencia = (int)entradas - salidas;//CALCULO LA EXISTENCIA
 
                                 //NO HAY UN PRODUCTO EN EXISTENCIA
-                                if (existencia == 0) {
+                                if (existencia == 0)
+                                {
                                     completo = false;
                                     existencia = -1;//NO PUEDE SELECCIONAR PARA ORDENAR
-                                } else {
+                                }
+                                else
+                                {
                                     existencia = -2;//PUEDE SELECCIONAR PARA ORDENAR
                                 }
                             }
@@ -1320,7 +1496,9 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
                         w++;
                     }
                 }//FIN IF-ELSE
-            } else {
+            }
+            else
+            {
                 //PERTENECE A COCINA
                 existencia = -2;
             }
@@ -1329,7 +1507,8 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
         }
 
 
-        public bool ExistEntrada(int prodId, ref double entradas) {
+        public bool ExistEntrada(int prodId, ref double entradas)
+        {
             bool esBar = false;
 
             //SE COMPRUEBA QUE HAYAN ENTRADAS EN EL BAR            
@@ -1338,13 +1517,15 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
                                join b in db.Bodegas on obj.BodegaId equals b.Id
                                where de.ProductoId == prodId && b.CodigoBodega == "B01"
                                group new { de, b } by new { b.CodigoBodega } into grouped
-                               select new {
+                               select new
+                               {
                                    Entradas = grouped.Sum(s => s.de.CantidadEntrada),//SUMAR TODAS LAS ENTRADAS
                                    Bar = grouped.Key.CodigoBodega == "B01" ? true : false//DETERMINAR SI LAS ENTRADAS SON DE BAR O BODEGA
                                }).FirstOrDefault();
 
             //SI CONTIENE AL MENOS UN ELEMENTO EL PRODUCTO TIENE EXISTENCIA
-            if (entradaProd != null) {
+            if (entradaProd != null)
+            {
                 entradas = (double)entradaProd.Entradas;
                 esBar = entradaProd.Bar;
             }
@@ -1352,7 +1533,8 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
             return esBar;
         }
 
-        public void ExistSalidas(int item, ref int salidas) {
+        public void ExistSalidas(int item, ref int salidas)
+        {
             //BUSCAR TODOS LOS PLATILLOS DEL AREA DE BAR QUE TENGAN EL INGREDIENTE            
             var salidasProd = (from obj in db.Menus
                                join i in db.Ingredientes on obj.Id equals i.MenuId
@@ -1363,13 +1545,16 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
                                select (int?)d.CantidadOrden).Sum();
 
             //SI CONTIENE AL MENOS UN ELEMENTO EL PRODUCTO TIENE EXISTENCIA
-            if (salidasProd != null) {
+            if (salidasProd != null)
+            {
                 salidas = (int)salidasProd;
             }
         }
 
-        protected override void Dispose(bool disposing) {
-            if (disposing) {
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
                 db.Dispose();
             }
             base.Dispose(disposing);

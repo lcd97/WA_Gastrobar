@@ -275,23 +275,6 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202008271724172_DeleteTurnoId.cs" />
-    <Compile Include="Migrations\202008271724172_DeleteTurnoId.Designer.cs">
-      <DependentUpon>202008271724172_DeleteTurnoId.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202011021713299_TablaMoneda.cs" />
-    <Compile Include="Migrations\202011021713299_TablaMoneda.Designer.cs">
-      <DependentUpon>202011021713299_TablaMoneda.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202011051943396_ComponiendoCampos.cs" />
-    <Compile Include="Migrations\202011051943396_ComponiendoCampos.Designer.cs">
-      <DependentUpon>202011051943396_ComponiendoCampos.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202012061727568_CampoInventariado.cs" />
-    <Compile Include="Migrations\202012061727568_CampoInventariado.Designer.cs">
-      <DependentUpon>202012061727568_CampoInventariado.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Bodega.cs" />
     <Compile Include="Models\CategoriaMenu.cs" />
@@ -495,40 +478,7 @@
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <Content Include="images\BlackLogo.png" />
-    <Content Include="images\downloadFile.png" />
-    <Content Include="images\Menu\2samosasdeindiahechoconpapasyespecies,servidoconunasalsadeyogurtycomino.jpg" />
-    <Content Include="images\Menu\aguaalpina1.50ltrs.jpeg" />
-    <Content Include="images\Menu\aguaalpina600ml.jpg" />
-    <Content Include="images\Menu\bananaflambeadoconhelado.jpg" />
-    <Content Include="images\Menu\botellajosécuervogold1ltr.jpg" />
-    <Content Include="images\Menu\botellaronflordecañaañejo15años.jpg" />
-    <Content Include="images\Menu\botellavinosantacarolina.jpg" />
-    <Content Include="images\Menu\botellavinotrapichemalbec.jpg" />
-    <Content Include="images\Menu\brochetasdepolloyvegetales.jpg" />
-    <Content Include="images\Menu\browniechocolateconhelado.jpg" />
-    <Content Include="images\Menu\cervezaheineken.jpg" />
-    <Content Include="images\Menu\cervezatoña12onz.jpg" />
-    <Content Include="images\Menu\copadevinosantacarolina.jpg" />
-    <Content Include="images\Menu\desayunocontinental.jpg" />
-    <Content Include="images\Menu\desayunonica.jpg" />
-    <Content Include="images\Menu\filetedepargorojoalaplanchaservidoconunasalsadeajoylimon.jpg" />
-    <Content Include="images\Menu\filetedepolloconsalsajalapeñaestilonicaragüense.jpg" />
-    <Content Include="images\Menu\gaseosacoca-cola12onz.jpg" />
-    <Content Include="images\Menu\huevo.png" />
     <Content Include="images\Menu\Insert-image.jpg" />
-    <Content Include="images\Menu\linguinialaromana.jpg" />
-    <Content Include="images\Menu\margarita.jpg" />
-    <Content Include="images\Menu\mojito.jpg" />
-    <Content Include="images\Menu\pancakesyfruta.jpg" />
-    <Content Include="images\Menu\pancasero.jpg" />
-    <Content Include="images\Menu\sandwichhuevo,quesocheddaryensalada.jpg" />
-    <Content Include="images\Menu\sandwichhummusyensalada.jpg" />
-    <Content Include="images\Menu\shottequilajosécuervogold.jpg" />
-    <Content Include="images\Menu\tasadecafénegro.jpg" />
-    <Content Include="images\Menu\tostonesconpollo.jpg" />
-    <Content Include="images\Menu\tostonesconqueso.jpg" />
-    <Content Include="images\Menu\tostonesmixtos%28quesoypollo%29.jpg" />
-    <Content Include="images\Menu\tragoderonflordecañaañejo15años.jpg" />
     <Content Include="images\picture.jpg" />
     <Content Include="images\Small_Logo.png" />
     <Content Include="images\user.png" />
@@ -660,15 +610,6 @@
     <Content Include="SqlServerTypes\x64\SqlServerSpatial140.dll" />
     <Content Include="SqlServerTypes\x86\msvcr120.dll" />
     <Content Include="SqlServerTypes\x86\SqlServerSpatial140.dll" />
-    <Content Include="Web.config">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </Content>
-    <Content Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </Content>
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
@@ -773,6 +714,15 @@
     <Content Include="Views\Ventas\VentasMensuales.cshtml" />
     <Content Include="Views\Ventas\SeleccionarAnio.cshtml" />
     <Content Include="Views\Facturaciones\Facturar.cshtml" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -801,18 +751,6 @@
     <Content Include="Scripts\jquery-3.3.1.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202008271724172_DeleteTurnoId.resx">
-      <DependentUpon>202008271724172_DeleteTurnoId.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202011021713299_TablaMoneda.resx">
-      <DependentUpon>202011021713299_TablaMoneda.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202011051943396_ComponiendoCampos.resx">
-      <DependentUpon>202011051943396_ComponiendoCampos.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202012061727568_CampoInventariado.resx">
-      <DependentUpon>202012061727568_CampoInventariado.cs</DependentUpon>
-    </EmbeddedResource>
     <Content Include="Reports\Facturas.rdlc" />
     <Content Include="Reports\Entradas.rdlc" />
     <Content Include="Reports\Existencias.rdlc" />
