@@ -263,3 +263,12 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+/ProyectoXalli_Gentelella/Web.config
+/ProyectoXalli_Gentelella/Web.Debug.config
+/ProyectoXalli_Gentelella/Web.Release.config
+/ProyectoXalli_Gentelella/Web_.config
+/ProyectoXalli_Gentelella/Web_.Debug.config
+/ProyectoXalli_Gentelella/Web_.Release.config
+/ProyectoXalli_Gentelella/Web.config
+/ProyectoXalli_Gentelella/Web.Debug.config
+/ProyectoXalli_Gentelella/Web.Release.config

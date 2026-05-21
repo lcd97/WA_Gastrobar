@@ -1,4 +1,10 @@
-﻿using System;
+﻿using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.AspNet.Identity.Owin;
+using Microsoft.Owin.Security;
+using ProyectoXalli_Gentelella.Models;
+using System;
+using System.Configuration;
 using System.Data.Entity;
 using System.Globalization;
 using System.Linq;
@@ -8,15 +14,12 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin.Security;
-using ProyectoXalli_Gentelella.Models;
 
-namespace ProyectoXalli_Gentelella.Controllers {
+namespace ProyectoXalli_Gentelella.Controllers
+{
     [Authorize]
-    public class AccountController : Controller {
+    public class AccountController : Controller
+    {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
         private ApplicationDbContext context = new ApplicationDbContext();
@@ -24,10 +27,12 @@ namespace ProyectoXalli_Gentelella.Controllers {
         private DBControl db = new DBControl();
         private string mensaje = "";
 
-        public AccountController() {
+        public AccountController()
+        {
         }
 
-        public ActionResult comprobarUser(string userName) {
+        public ActionResult comprobarUser(string userName)
+        {
             var checkUser = UserManager.FindByName(userName);
 
             bool existe = checkUser != null ? true : false;
@@ -39,7 +44,8 @@ namespace ProyectoXalli_Gentelella.Controllers {
         /// RETORNA LA VISTA DE PERFIL DE USUARIO
         /// </summary>
         /// <returns></returns>
-        public ActionResult UserProfile() {
+        public ActionResult UserProfile()
+        {
             return View();
         }
 
@@ -48,14 +54,16 @@ namespace ProyectoXalli_Gentelella.Controllers {
         /// </summary>
         /// <param name="empleado"></param>
         /// <returns></returns>
-        public ActionResult ColaboradorRole(string empleado) {
+        public ActionResult ColaboradorRole(string empleado)
+        {
 
             var result = (from tb1 in context.Users
                           from tb2 in tb1.Roles
                           join tb3 in context.Roles on tb2.RoleId equals tb3.Id
                           where tb1.Id == empleado
                           orderby tb1.UserName, tb3.Name
-                          select new {
+                          select new
+                          {
                               Role = tb3.Name,
                               ColaboradorId = tb1.PeopleId
                           }).FirstOrDefault();
@@ -68,13 +76,15 @@ namespace ProyectoXalli_Gentelella.Controllers {
         /// </summary>
         /// <param name="empleado"></param>
         /// <returns></returns>
-        public ActionResult userProfileData(string empleado) {
+        public ActionResult userProfileData(string empleado)
+        {
             var colaborador = (from tb1 in context.Users//NETUSER
                                from tb2 in tb1.Roles//NETROLES
                                join tb3 in context.Roles on tb2.RoleId equals tb3.Id
                                where tb1.Id == empleado
                                orderby tb1.UserName, tb3.Name
-                               select new {
+                               select new
+                               {
                                    UserId = tb1.Id,
                                    Role = tb3.Name,
                                    ColaboradorId = tb1.PeopleId,
@@ -85,7 +95,8 @@ namespace ProyectoXalli_Gentelella.Controllers {
             var dataProfile = (from obj in db.Datos.ToList()
                                join col in db.Meseros.ToList() on obj.Id equals col.DatoId
                                where col.Id == colaborador.ColaboradorId
-                               select new {
+                               select new
+                               {
                                    ColaboradorId = col.Id,
                                    Nombre = obj.PNombre,
                                    Apellido = obj.PApellido,
@@ -100,10 +111,13 @@ namespace ProyectoXalli_Gentelella.Controllers {
         }
 
         [HttpPost]
-        public ActionResult EditProfile(int colaboradorId, string userId, string nombreCol, string apellidoCol, string correo, string ruc) {
+        public ActionResult EditProfile(int colaboradorId, string userId, string nombreCol, string apellidoCol, string correo, string ruc)
+        {
 
-            if (ruc != "") {
-                if (ruc.Length != 14) {
+            if (ruc != "")
+            {
+                if (ruc.Length != 14)
+                {
                     mensaje = "El número RUC debe ser de 14 dígitos";
                     return Json(new { success = false, message = mensaje }, JsonRequestBehavior.AllowGet);
                 }
@@ -115,7 +129,8 @@ namespace ProyectoXalli_Gentelella.Controllers {
             string nombre = "";
 
             //SI ENCUENTRA EL MESERO EDITAR DATOS
-            if (mesero != null) {
+            if (mesero != null)
+            {
                 Dato dato = db.Datos.DefaultIfEmpty(null).FirstOrDefault(d => d.Id == mesero.DatoId);
 
                 dato.PNombre = nombreCol;
@@ -125,11 +140,13 @@ namespace ProyectoXalli_Gentelella.Controllers {
                 nombre = dato.PNombre + " " + dato.PApellido;
 
                 db.Entry(dato).State = EntityState.Modified;
-                if (db.SaveChanges() > 0) {
+                if (db.SaveChanges() > 0)
+                {
                     //BUSCAMOS EL USUARIO EN SEGURIDAD
                     var usuario = UserManager.FindById(userId);
 
-                    if (usuario != null) {
+                    if (usuario != null)
+                    {
                         usuario.Email = correo != "" ? correo : null;
 
                         result = UserManager.Update(usuario);
@@ -141,25 +158,32 @@ namespace ProyectoXalli_Gentelella.Controllers {
             return Json(new { success = result.Succeeded, message = mensaje, Nombre = nombre }, JsonRequestBehavior.AllowGet);
         }
 
-        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager) {
+        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
+        {
             UserManager = userManager;
             SignInManager = signInManager;
         }
 
-        public ApplicationSignInManager SignInManager {
-            get {
+        public ApplicationSignInManager SignInManager
+        {
+            get
+            {
                 return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
             }
-            private set {
+            private set
+            {
                 _signInManager = value;
             }
         }
 
-        public ApplicationUserManager UserManager {
-            get {
+        public ApplicationUserManager UserManager
+        {
+            get
+            {
                 return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
             }
-            private set {
+            private set
+            {
                 _userManager = value;
             }
         }
@@ -167,7 +191,8 @@ namespace ProyectoXalli_Gentelella.Controllers {
         //
         // GET: /Account/Login
         [AllowAnonymous]
-        public ActionResult Login(string returnUrl, string mensaje = "") {
+        public ActionResult Login(string returnUrl, string mensaje = "")
+        {
 
             if (mensaje != "")
                 ViewBag.mensaje = mensaje;
@@ -181,16 +206,20 @@ namespace ProyectoXalli_Gentelella.Controllers {
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Login(LoginViewModel model, string returnUrl) {
-            if (!ModelState.IsValid) {
+        public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
+        {
+            if (!ModelState.IsValid)
+            {
                 return View(model);
             }
 
             //VALIDAR QUE LA CUENTA NO ESTE BLOQUEDA
             var userLogin = UserManager.Find(model.Username, model.Password);
 
-            if (userLogin != null) {
-                if (!userLogin.LockoutEnabled) {
+            if (userLogin != null)
+            {
+                if (!userLogin.LockoutEnabled)
+                {
                     ModelState.AddModelError("", "Intento de inicio de sesión no válido.");
                     return View(model);
                 }
@@ -199,7 +228,8 @@ namespace ProyectoXalli_Gentelella.Controllers {
             // No cuenta los errores de inicio de sesión para el bloqueo de la cuenta
             // Para permitir que los errores de contraseña desencadenen el bloqueo de la cuenta, cambie a shouldLockout: true
             var result = await SignInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberMe, shouldLockout: false);
-            switch (result) {
+            switch (result)
+            {
                 case SignInStatus.Success:
                     return RedirectToLocal(returnUrl);
                 case SignInStatus.LockedOut:
@@ -216,9 +246,11 @@ namespace ProyectoXalli_Gentelella.Controllers {
         //
         // GET: /Account/VerifyCode
         [AllowAnonymous]
-        public async Task<ActionResult> VerifyCode(string provider, string returnUrl, bool rememberMe) {
+        public async Task<ActionResult> VerifyCode(string provider, string returnUrl, bool rememberMe)
+        {
             // Requerir que el usuario haya iniciado sesión con nombre de usuario y contraseña o inicio de sesión externo
-            if (!await SignInManager.HasBeenVerifiedAsync()) {
+            if (!await SignInManager.HasBeenVerifiedAsync())
+            {
                 return View("Error");
             }
             return View(new VerifyCodeViewModel { Provider = provider, ReturnUrl = returnUrl, RememberMe = rememberMe });
@@ -229,8 +261,10 @@ namespace ProyectoXalli_Gentelella.Controllers {
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> VerifyCode(VerifyCodeViewModel model) {
-            if (!ModelState.IsValid) {
+        public async Task<ActionResult> VerifyCode(VerifyCodeViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
                 return View(model);
             }
 
@@ -239,7 +273,8 @@ namespace ProyectoXalli_Gentelella.Controllers {
             // se bloqueará durante un período de tiempo especificado. 
             // Puede configurar el bloqueo de la cuenta en IdentityConfig
             var result = await SignInManager.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent: model.RememberMe, rememberBrowser: model.RememberBrowser);
-            switch (result) {
+            switch (result)
+            {
                 case SignInStatus.Success:
                     return RedirectToLocal(model.ReturnUrl);
                 case SignInStatus.LockedOut:
@@ -254,7 +289,8 @@ namespace ProyectoXalli_Gentelella.Controllers {
         [Authorize(Roles = "Admin")]
         //
         // GET: /Account/Register
-        public ActionResult Register() {
+        public ActionResult Register()
+        {
             ViewBag.RoleList = new SelectList(context.Roles.ToList(), "Name", "Name");
 
             return View();
@@ -265,14 +301,16 @@ namespace ProyectoXalli_Gentelella.Controllers {
         [HttpPost]
         //[AllowAnonymous]
         //[ValidateAntiForgeryToken]
-        public async Task<ActionResult> Register(/*RegisterViewModel model*/string Username, string Password, string PasswordConfirmed, string ConfirmPassword, string RoleName, int PeopleId) {
+        public async Task<ActionResult> Register(/*RegisterViewModel model*/string Username, string Password, string PasswordConfirmed, string ConfirmPassword, string RoleName, int PeopleId)
+        {
             bool almacenado = false;
 
             //if (ModelState.IsValid)
             //{
             var user = new ApplicationUser { UserName = Username, PeopleId = PeopleId /*, Email = model.Username*/ };
             var result = await UserManager.CreateAsync(user, Password);
-            if (result.Succeeded) {
+            if (result.Succeeded)
+            {
                 //await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false); INICIA SESION AUTOMATICAMENTE
 
                 // Para obtener más información sobre cómo habilitar la confirmación de cuentas y el restablecimiento de contraseña, visite https://go.microsoft.com/fwlink/?LinkID=320771
@@ -305,8 +343,10 @@ namespace ProyectoXalli_Gentelella.Controllers {
         //
         // GET: /Account/ConfirmEmail
         [AllowAnonymous]
-        public async Task<ActionResult> ConfirmEmail(string userId, string code) {
-            if (userId == null || code == null) {
+        public async Task<ActionResult> ConfirmEmail(string userId, string code)
+        {
+            if (userId == null || code == null)
+            {
                 return View("Error");
             }
             var result = await UserManager.ConfirmEmailAsync(userId, code);
@@ -316,7 +356,8 @@ namespace ProyectoXalli_Gentelella.Controllers {
         //
         // GET: /Account/ForgotPassword
         [AllowAnonymous]
-        public ActionResult ForgotPassword() {
+        public ActionResult ForgotPassword()
+        {
             return View();
         }
 
@@ -325,10 +366,13 @@ namespace ProyectoXalli_Gentelella.Controllers {
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> ForgotPassword(ForgotPasswordViewModel model) {
-            if (ModelState.IsValid) {
+        public async Task<ActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
                 var user = await UserManager.FindByEmailAsync(model.Email);
-                if (user == null /*|| !(await UserManager.IsEmailConfirmedAsync(user.Id))*/) {
+                if (user == null /*|| !(await UserManager.IsEmailConfirmedAsync(user.Id))*/)
+                {
                     // No revelar que el usuario no existe o que no está confirmado
                     return View("ForgotPasswordConfirmation");
                 }
@@ -338,7 +382,7 @@ namespace ProyectoXalli_Gentelella.Controllers {
                 string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
                 var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                 //await UserManager.SendEmailAsync(user.Id, "Restablecer contraseña", "Para restablecer la contraseña, haga clic <a href=\"" + callbackUrl + "\">aquí</a>");
-                var body= "Restablecer contraseña\nPara restablecer la contraseña, haga clic <a href=\"" + callbackUrl + "\">aquí</a>";
+                var body = "Restablecer contraseña\nPara restablecer la contraseña, haga clic <a href=\"" + callbackUrl + "\">aquí</a>";
                 sendEmail(model.Email, body);
 
                 return RedirectToAction("ForgotPasswordConfirmation", "Account");
@@ -348,12 +392,13 @@ namespace ProyectoXalli_Gentelella.Controllers {
             return View(model);
         }
 
-        public void sendEmail(string Email, string body) {
-            string emailHotel = "proyectoshotel2020@gmail.com";
-            string passwordHotel = "bxqalmibjgxzjqux";
-            //string passwordHotel = "Calabazas#sin.Nombre2020";
+        public void sendEmail(string Email, string body)
+        {
+            string emailHotel = ConfigurationManager.AppSettings["EmailHotel"];
+            string passwordHotel = ConfigurationManager.AppSettings["PasswordHotel"];
 
-            try {
+            try
+            {
                 MailMessage correo = new MailMessage();
                 correo.From = new MailAddress(emailHotel);
                 correo.To.Add(Email);
@@ -372,7 +417,9 @@ namespace ProyectoXalli_Gentelella.Controllers {
 
                 mensaje = "Correo enviado correctamente";
 
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 mensaje = ex.Message;
             }
         }
@@ -380,48 +427,62 @@ namespace ProyectoXalli_Gentelella.Controllers {
         //
         // GET: /Account/ForgotPasswordConfirmation
         [AllowAnonymous]
-        public ActionResult ForgotPasswordConfirmation() {
+        public ActionResult ForgotPasswordConfirmation()
+        {
             return View();
         }
 
         [HttpPost]
-        public async Task<ActionResult> changePassReset(string userId) {
+        public async Task<ActionResult> changePassReset(string userId)
+        {
             string pass = "xalli2021";
             IdentityResult resultado = new IdentityResult();
 
             var usuario = await UserManager.FindByIdAsync(userId);
 
-            if (usuario != null) {
+            if (usuario != null)
+            {
 
-                if (!string.IsNullOrEmpty(pass)) {
+                if (!string.IsNullOrEmpty(pass))
+                {
                     IdentityResult validacionClave = await UserManager.PasswordValidator.ValidateAsync(pass);
 
-                    if (validacionClave.Succeeded) {
+                    if (validacionClave.Succeeded)
+                    {
                         usuario.PasswordHash = UserManager.PasswordHasher.HashPassword(pass);
                         resultado = await UserManager.UpdateAsync(usuario);
-                        if (resultado.Succeeded) {
+                        if (resultado.Succeeded)
+                        {
                             mensaje = "Cambio exitoso. Nueva clave: " + pass;
-                        } else {
+                        }
+                        else
+                        {
                             mensaje = "Error al modificar. Intentelo de nuevo";
                         }
                     }
-                } else {
+                }
+                else
+                {
                     mensaje = "La clave no puede estar vacia.";
                 }
-            } else {
+            }
+            else
+            {
                 mensaje = "Usuario no encontrado";
             }
 
             return Json(new { success = resultado.Succeeded, message = mensaje }, JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult GetData() {
+        public JsonResult GetData()
+        {
             var result = (from tb1 in context.Users
                           from tb2 in tb1.Roles
                           join tb3 in context.Roles on tb2.RoleId equals tb3.Id
                           where tb1.PeopleId != 0
                           orderby tb1.UserName, tb3.Name
-                          select new {
+                          select new
+                          {
                               Id = tb1.Id,
                               Role = tb3.Name,
                               UserName = tb1.UserName,
@@ -431,14 +492,16 @@ namespace ProyectoXalli_Gentelella.Controllers {
             return Json(new { data = result }, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult ResetByAdmin() {
+        public ActionResult ResetByAdmin()
+        {
             return View();
         }
 
         //
         // GET: /Account/ResetPassword
         [AllowAnonymous]
-        public ActionResult ResetPassword(string code) {
+        public ActionResult ResetPassword(string code)
+        {
             return code == null ? View("Error") : View();
         }
 
@@ -447,17 +510,21 @@ namespace ProyectoXalli_Gentelella.Controllers {
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> ResetPassword(ResetPasswordViewModel model) {
-            if (!ModelState.IsValid) {
+        public async Task<ActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
                 return View(model);
             }
             var user = await UserManager.FindByNameAsync(model.UserName);
-            if (user == null) {
+            if (user == null)
+            {
                 // No revelar que el usuario no existe
                 return RedirectToAction("ResetPasswordConfirmation", "Account");
             }
             var result = await UserManager.ResetPasswordAsync(user.Id, model.Code, model.Password);
-            if (result.Succeeded) {
+            if (result.Succeeded)
+            {
                 return RedirectToAction("ResetPasswordConfirmation", "Account");
             }
             //AddErrors(result);
@@ -467,7 +534,8 @@ namespace ProyectoXalli_Gentelella.Controllers {
         //
         // GET: /Account/ResetPasswordConfirmation
         [AllowAnonymous]
-        public ActionResult ResetPasswordConfirmation() {
+        public ActionResult ResetPasswordConfirmation()
+        {
             return View();
         }
 
@@ -476,7 +544,8 @@ namespace ProyectoXalli_Gentelella.Controllers {
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public ActionResult ExternalLogin(string provider, string returnUrl) {
+        public ActionResult ExternalLogin(string provider, string returnUrl)
+        {
             // Solicitar redireccionamiento al proveedor de inicio de sesión externo
             return new ChallengeResult(provider, Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = returnUrl }));
         }
@@ -484,9 +553,11 @@ namespace ProyectoXalli_Gentelella.Controllers {
         //
         // GET: /Account/SendCode
         [AllowAnonymous]
-        public async Task<ActionResult> SendCode(string returnUrl, bool rememberMe) {
+        public async Task<ActionResult> SendCode(string returnUrl, bool rememberMe)
+        {
             var userId = await SignInManager.GetVerifiedUserIdAsync();
-            if (userId == null) {
+            if (userId == null)
+            {
                 return View("Error");
             }
             var userFactors = await UserManager.GetValidTwoFactorProvidersAsync(userId);
@@ -499,13 +570,16 @@ namespace ProyectoXalli_Gentelella.Controllers {
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> SendCode(SendCodeViewModel model) {
-            if (!ModelState.IsValid) {
+        public async Task<ActionResult> SendCode(SendCodeViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
                 return View();
             }
 
             // Generar el token y enviarlo
-            if (!await SignInManager.SendTwoFactorCodeAsync(model.SelectedProvider)) {
+            if (!await SignInManager.SendTwoFactorCodeAsync(model.SelectedProvider))
+            {
                 return View("Error");
             }
             return RedirectToAction("VerifyCode", new { Provider = model.SelectedProvider, ReturnUrl = model.ReturnUrl, RememberMe = model.RememberMe });
@@ -514,15 +588,18 @@ namespace ProyectoXalli_Gentelella.Controllers {
         //
         // GET: /Account/ExternalLoginCallback
         [AllowAnonymous]
-        public async Task<ActionResult> ExternalLoginCallback(string returnUrl) {
+        public async Task<ActionResult> ExternalLoginCallback(string returnUrl)
+        {
             var loginInfo = await AuthenticationManager.GetExternalLoginInfoAsync();
-            if (loginInfo == null) {
+            if (loginInfo == null)
+            {
                 return RedirectToAction("Login");
             }
 
             // Si el usuario ya tiene un inicio de sesión, iniciar sesión del usuario con este proveedor de inicio de sesión externo
             var result = await SignInManager.ExternalSignInAsync(loginInfo, isPersistent: false);
-            switch (result) {
+            switch (result)
+            {
                 case SignInStatus.Success:
                     return RedirectToLocal(returnUrl);
                 case SignInStatus.LockedOut:
@@ -543,22 +620,28 @@ namespace ProyectoXalli_Gentelella.Controllers {
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> ExternalLoginConfirmation(ExternalLoginConfirmationViewModel model, string returnUrl) {
-            if (User.Identity.IsAuthenticated) {
+        public async Task<ActionResult> ExternalLoginConfirmation(ExternalLoginConfirmationViewModel model, string returnUrl)
+        {
+            if (User.Identity.IsAuthenticated)
+            {
                 return RedirectToAction("Index", "Manage");
             }
 
-            if (ModelState.IsValid) {
+            if (ModelState.IsValid)
+            {
                 // Obtener datos del usuario del proveedor de inicio de sesión externo
                 var info = await AuthenticationManager.GetExternalLoginInfoAsync();
-                if (info == null) {
+                if (info == null)
+                {
                     return View("ExternalLoginFailure");
                 }
                 var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
                 var result = await UserManager.CreateAsync(user);
-                if (result.Succeeded) {
+                if (result.Succeeded)
+                {
                     result = await UserManager.AddLoginAsync(user.Id, info.Login);
-                    if (result.Succeeded) {
+                    if (result.Succeeded)
+                    {
                         await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
                         return RedirectToLocal(returnUrl);
                     }
@@ -574,7 +657,8 @@ namespace ProyectoXalli_Gentelella.Controllers {
         // POST: /Account/LogOff
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult LogOff() {
+        public ActionResult LogOff()
+        {
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
             return RedirectToAction("Login", "Account");
         }
@@ -582,18 +666,23 @@ namespace ProyectoXalli_Gentelella.Controllers {
         //
         // GET: /Account/ExternalLoginFailure
         [AllowAnonymous]
-        public ActionResult ExternalLoginFailure() {
+        public ActionResult ExternalLoginFailure()
+        {
             return View();
         }
 
-        protected override void Dispose(bool disposing) {
-            if (disposing) {
-                if (_userManager != null) {
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (_userManager != null)
+                {
                     _userManager.Dispose();
                     _userManager = null;
                 }
 
-                if (_signInManager != null) {
+                if (_signInManager != null)
+                {
                     _signInManager.Dispose();
                     _signInManager = null;
                 }
@@ -606,31 +695,40 @@ namespace ProyectoXalli_Gentelella.Controllers {
         // Se usa para la protección XSRF al agregar inicios de sesión externos
         private const string XsrfKey = "XsrfId";
 
-        private IAuthenticationManager AuthenticationManager {
-            get {
+        private IAuthenticationManager AuthenticationManager
+        {
+            get
+            {
                 return HttpContext.GetOwinContext().Authentication;
             }
         }
 
-        private void AddErrors(IdentityResult result) {
-            foreach (var error in result.Errors) {
+        private void AddErrors(IdentityResult result)
+        {
+            foreach (var error in result.Errors)
+            {
                 ModelState.AddModelError("", error);
             }
         }
 
-        private ActionResult RedirectToLocal(string returnUrl) {
-            if (Url.IsLocalUrl(returnUrl)) {
+        private ActionResult RedirectToLocal(string returnUrl)
+        {
+            if (Url.IsLocalUrl(returnUrl))
+            {
                 return Redirect(returnUrl);
             }
             return RedirectToAction("Index", "Home");
         }
 
-        internal class ChallengeResult : HttpUnauthorizedResult {
+        internal class ChallengeResult : HttpUnauthorizedResult
+        {
             public ChallengeResult(string provider, string redirectUri)
-                : this(provider, redirectUri, null) {
+                : this(provider, redirectUri, null)
+            {
             }
 
-            public ChallengeResult(string provider, string redirectUri, string userId) {
+            public ChallengeResult(string provider, string redirectUri, string userId)
+            {
                 LoginProvider = provider;
                 RedirectUri = redirectUri;
                 UserId = userId;
@@ -640,9 +738,11 @@ namespace ProyectoXalli_Gentelella.Controllers {
             public string RedirectUri { get; set; }
             public string UserId { get; set; }
 
-            public override void ExecuteResult(ControllerContext context) {
+            public override void ExecuteResult(ControllerContext context)
+            {
                 var properties = new AuthenticationProperties { RedirectUri = RedirectUri };
-                if (UserId != null) {
+                if (UserId != null)
+                {
                     properties.Dictionary[XsrfKey] = UserId;
                 }
                 context.HttpContext.GetOwinContext().Authentication.Challenge(properties, LoginProvider);
