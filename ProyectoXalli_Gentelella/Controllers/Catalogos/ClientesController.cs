@@ -1,4 +1,5 @@
-﻿using ProyectoXalli_Gentelella.Models;
+﻿using ProyectoXalli_Gentelella.Filters;
+using ProyectoXalli_Gentelella.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -17,7 +18,7 @@ namespace ProyectoXalli_Gentelella.Controllers.Catalogos {
         private bool completado = false;
         private string mensaje = "";
 
-        [Authorize(Roles = "Admin")]
+        [CustomAuthorize(Roles = "Admin")]
         // GET: Clientes
         public ActionResult Index() {
             return View();
@@ -40,7 +41,7 @@ namespace ProyectoXalli_Gentelella.Controllers.Catalogos {
             return Json(new { data = clientes }, JsonRequestBehavior.AllowGet);
         }
 
-        [Authorize(Roles = "Admin, Mesero, Bartender, Cocinero, Recepcionista")]
+        [CustomAuthorize(Roles = "Admin, Mesero, Bartender, Cocinero, Recepcionista")]
         /// <summary>
         /// RETORNA LA VISTA CREATE
         /// </summary>
@@ -173,7 +174,7 @@ namespace ProyectoXalli_Gentelella.Controllers.Catalogos {
             return Json(new { success = completado, message = mensaje, clienteId }, JsonRequestBehavior.AllowGet);
         }
 
-        [Authorize(Roles = "Admin, Mesero, Bartender, Cocinero, Recepcionista")]
+        [CustomAuthorize(Roles = "Admin, Mesero, Bartender, Cocinero, Recepcionista")]
         /// <summary>
         /// DEVULVE LA VISTA EDITAR DEL CLIENTE
         /// </summary>
@@ -273,7 +274,7 @@ namespace ProyectoXalli_Gentelella.Controllers.Catalogos {
             return Json(customer, JsonRequestBehavior.AllowGet);
         }
 
-        [Authorize(Roles = "Admin")]
+        [CustomAuthorize(Roles = "Admin")]
         /// <summary>
         /// RECUPERA LA VISTA DETALLE DE CLIENTE
         /// </summary>

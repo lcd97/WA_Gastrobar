@@ -1,4 +1,5 @@
-﻿using ProyectoXalli_Gentelella.Models;
+﻿using ProyectoXalli_Gentelella.Filters;
+using ProyectoXalli_Gentelella.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -16,7 +17,7 @@ namespace ProyectoXalli_Gentelella.Controllers.Catalogos {
         private bool completado = false;
         private string mensaje = "";
 
-        [Authorize(Roles = "Admin")]
+        [CustomAuthorize(Roles = "Admin")]
         // GET: CategoriasMenu
         public ActionResult Index() {
             return View();
@@ -33,7 +34,7 @@ namespace ProyectoXalli_Gentelella.Controllers.Catalogos {
             return Json(new { data = categorias }, JsonRequestBehavior.AllowGet);
         }
 
-        [Authorize(Roles = "Admin")]
+        [CustomAuthorize(Roles = "Admin")]
         // GET: Categorias/Create
         public ActionResult Create() {
             ViewBag.BodegaId = new SelectList(db.Bodegas, "Id", "DescripcionBodega");
@@ -82,7 +83,7 @@ namespace ProyectoXalli_Gentelella.Controllers.Catalogos {
             return Json(new { success = completado, message = mensaje }, JsonRequestBehavior.AllowGet);
         }
 
-        [Authorize(Roles = "Admin")]
+        [CustomAuthorize(Roles = "Admin")]
         // GET: Categorias/Edit/5
         public async Task<ActionResult> Edit(int? id) {
             if (id == null) {

@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using ProyectoXalli_Gentelella.Filters;
 using ProyectoXalli_Gentelella.Models;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
         bool completado = false;
         string mensaje = "";
 
-        [Authorize(Roles = "Admin, Cocinero")]
+        [CustomAuthorize(Roles = "Admin, Cocinero")]
         /// <summary>
         /// MUESTRA INDEX DE ENTRADAS RESTAURANTE
         /// </summary>

@@ -1,4 +1,5 @@
-﻿using ProyectoXalli_Gentelella.Models;
+﻿using ProyectoXalli_Gentelella.Filters;
+using ProyectoXalli_Gentelella.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -13,7 +14,7 @@ namespace ProyectoXalli_Gentelella.Controllers.Busquedas {
 
         private DBControl db = new DBControl();
 
-        [Authorize(Roles = "Admin, Mesero, Recepcionista, Barman")]
+        [CustomAuthorize(Roles = "Admin, Mesero, Recepcionista, Barman")]
         // GET: Busquedas
         public ActionResult BuscarCliente() {
             return View();

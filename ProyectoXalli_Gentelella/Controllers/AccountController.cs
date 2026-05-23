@@ -2,6 +2,7 @@
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
+using ProyectoXalli_Gentelella.Filters;
 using ProyectoXalli_Gentelella.Models;
 using System;
 using System.Configuration;
@@ -286,7 +287,7 @@ namespace ProyectoXalli_Gentelella.Controllers
             }
         }
 
-        [Authorize(Roles = "Admin")]
+        [CustomAuthorize(Roles = "Admin")]
         //
         // GET: /Account/Register
         public ActionResult Register()
@@ -492,6 +493,7 @@ namespace ProyectoXalli_Gentelella.Controllers
             return Json(new { data = result }, JsonRequestBehavior.AllowGet);
         }
 
+        [CustomAuthorize(Roles = "Admin")]
         public ActionResult ResetByAdmin()
         {
             return View();

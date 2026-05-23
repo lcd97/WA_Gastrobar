@@ -1,19 +1,23 @@
-﻿using ProyectoXalli_Gentelella.Models;
+﻿using ProyectoXalli_Gentelella.Filters;
+using ProyectoXalli_Gentelella.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
+namespace ProyectoXalli_Gentelella.Controllers.Movimientos
+{
 
     [Authorize]
-    public class ActivacionesController : Controller {
+    public class ActivacionesController : Controller
+    {
         private DBControl db = new DBControl();
 
-        [Authorize(Roles = "Admin")]
+        [CustomAuthorize(Roles = "Admin")]
         // GET: Activaciones
-        public ActionResult Index() {
+        public ActionResult Index()
+        {
             return View();
         }
 
@@ -24,10 +28,12 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
         /// LISTA TODAS LAS BODEGAS DESACTIVADAS
         /// </summary>
         /// <returns></returns>
-        public JsonResult getBodegas() {
+        public JsonResult getBodegas()
+        {
             var bodegas = (from obj in db.Bodegas.ToList()
                            where obj.EstadoBodega == false
-                           select new {
+                           select new
+                           {
                                Id = obj.Id,
                                Descripcion = obj.DescripcionBodega,
                                Codigo = obj.CodigoBodega
@@ -40,10 +46,12 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
         /// LISTA TODAS LAS CATEGORIAS DESACTIVADAS
         /// </summary>
         /// <returns></returns>
-        public JsonResult getCategoriasProducto() {
+        public JsonResult getCategoriasProducto()
+        {
             var categorias = (from obj in db.CategoriasProducto.ToList()
                               where obj.EstadoCategoria == false
-                              select new {
+                              select new
+                              {
                                   Id = obj.Id,
                                   Descripcion = obj.DescripcionCategoria,
                                   Codigo = obj.CodigoCategoria
@@ -56,10 +64,12 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
         /// LISTA TODAS LAS TIPOS DE ENTRADAS DESACTIVADAS
         /// </summary>
         /// <returns></returns>
-        public JsonResult getTiposDeEntrada() {
+        public JsonResult getTiposDeEntrada()
+        {
             var tiposEntrada = (from obj in db.TiposDeEntrada.ToList()
                                 where obj.EstadoTipoEntrada == false
-                                select new {
+                                select new
+                                {
                                     Id = obj.Id,
                                     Descripcion = obj.DescripcionTipoEntrada,
                                     Codigo = obj.CodigoTipoEntrada
@@ -72,10 +82,12 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
         /// LISTA TODAS LAS TIPOS DE ENTRADAS DESACTIVADAS
         /// </summary>
         /// <returns></returns>
-        public JsonResult getUnidadesDeMedida() {
+        public JsonResult getUnidadesDeMedida()
+        {
             var um = (from obj in db.UnidadesDeMedida.ToList()
                       where obj.EstadoUnidadMedida == false
-                      select new {
+                      select new
+                      {
                           Id = obj.Id,
                           Descripcion = obj.DescripcionUnidadMedida,
                           Codigo = obj.CodigoUnidadMedida
@@ -88,10 +100,12 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
         /// LISTA TODAS LOS PRODUCTOS DESACTIVADAS
         /// </summary>
         /// <returns></returns>
-        public JsonResult getProductos() {
+        public JsonResult getProductos()
+        {
             var um = (from obj in db.Productos.ToList()
                       where obj.EstadoProducto == false
-                      select new {
+                      select new
+                      {
                           Id = obj.Id,
                           Descripcion = obj.NombreProducto,
                           Codigo = obj.CodigoProducto
@@ -104,11 +118,13 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
         /// LISTA TODAS LOS PROVEEDORES DESACTIVADAS
         /// </summary>
         /// <returns></returns>
-        public JsonResult getProveedores() {
+        public JsonResult getProveedores()
+        {
             var um = (from obj in db.Proveedores.ToList()
                       join u in db.Datos.ToList() on obj.DatoId equals u.Id
                       where obj.EstadoProveedor == false
-                      select new {
+                      select new
+                      {
                           Id = obj.Id,
                           //CONSULTA PARA ASIGNARLE A LA VARIABLE DESCRIPCION EL NOMBRE COMERCIAL O NOMBRE DE LA PERSONA NATURAL
                           Descripcion = obj.NombreComercial != null ? obj.NombreComercial : u.PNombre + " " + u.PApellido,
@@ -124,10 +140,12 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
         /// LISTA TODAS LAS CATEGORIAS DESACTIVADAS
         /// </summary>
         /// <returns></returns>
-        public JsonResult getCategoriasMenu() {
+        public JsonResult getCategoriasMenu()
+        {
             var categorias = (from obj in db.CategoriasMenu.ToList()
                               where obj.EstadoCategoriaMenu == false
-                              select new {
+                              select new
+                              {
                                   Id = obj.Id,
                                   Descripcion = obj.DescripcionCategoriaMenu,
                                   Codigo = obj.CodigoCategoriaMenu
@@ -140,11 +158,13 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
         /// LISTA TODAS LOS ITEMS DEL MENU (PLATILLOS)
         /// </summary>
         /// <returns></returns>
-        public JsonResult getMenus() {
+        public JsonResult getMenus()
+        {
             var platillos = (from obj in db.Menus.ToList()
                              join i in db.Imagenes.ToList() on obj.ImagenId equals i.Id
                              where obj.EstadoMenu == false
-                             select new {
+                             select new
+                             {
                                  Id = obj.Id,
                                  DescripcionPlatillo = obj.DescripcionMenu,
                                  Precio = obj.PrecioMenu,
@@ -156,11 +176,13 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
 
         /**************************************************
          *                MODULO ORDENES                 */
-        public JsonResult getMeseros() {
+        public JsonResult getMeseros()
+        {
             var meseros = (from obj in db.Meseros.ToList()
                            join d in db.Datos.ToList() on obj.DatoId equals d.Id
                            where obj.EstadoMesero == false
-                           select new {
+                           select new
+                           {
                                Id = obj.Id,
                                Descripcion = d.PNombre + " " + d.PApellido,
                                Codigo = d.Cedula.Trim()
@@ -169,11 +191,13 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
             return Json(new { data = meseros }, JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult getClientes() {
+        public JsonResult getClientes()
+        {
             var meseros = (from obj in db.Clientes.ToList()
                            join d in db.Datos.ToList() on obj.DatoId equals d.Id
                            where obj.EstadoCliente == false && obj.EmailCliente != "defaultuser@xalli.com"
-                           select new {
+                           select new
+                           {
                                Id = obj.Id,
                                Descripcion = d.PNombre + " " + d.PApellido,
                                Codigo = d.Cedula.Trim()
@@ -182,10 +206,12 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
             return Json(new { data = meseros }, JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult getMesas() {
+        public JsonResult getMesas()
+        {
             var meseros = (from obj in db.Mesas.ToList()
                            where obj.EstadoMesa == false
-                           select new {
+                           select new
+                           {
                                Id = obj.Id,
                                Descripcion = obj.DescripcionMesa,
                                Codigo = obj.CodigoMesa
@@ -194,10 +220,12 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
             return Json(new { data = meseros }, JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult getTiposDeOrden() {
+        public JsonResult getTiposDeOrden()
+        {
             var meseros = (from obj in db.TiposDeOrden.ToList()
                            where obj.EstadoTipoOrden == false
-                           select new {
+                           select new
+                           {
                                Id = obj.Id,
                                Descripcion = obj.DescripcionTipoOrden,
                                Codigo = obj.CodigoTipoOrden
@@ -208,10 +236,12 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
 
         /**************************************************
          *            MODULO FACTURACION                 */
-        public JsonResult getTiposDePago() {
+        public JsonResult getTiposDePago()
+        {
             var pagos = (from obj in db.TiposDePago.ToList()
                          where obj.EstadoTipoPago == false
-                         select new {
+                         select new
+                         {
                              Id = obj.Id,
                              Descripcion = obj.DescripcionTipoPago,
                              Codigo = obj.CodigoTipoPago.Trim()
@@ -220,10 +250,12 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
             return Json(new { data = pagos }, JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult getMonedas() {
+        public JsonResult getMonedas()
+        {
             var moneda = (from obj in db.Monedas.ToList()
                           where obj.EstadoMoneda == false
-                          select new {
+                          select new
+                          {
                               Id = obj.Id,
                               Descripcion = obj.DescripcionMoneda,
                               Codigo = obj.CodigoMoneda.Trim()
