@@ -1,4 +1,5 @@
-﻿using ProyectoXalli_Gentelella.Models;
+﻿using ProyectoXalli_Gentelella.Filters;
+using ProyectoXalli_Gentelella.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -18,7 +19,7 @@ namespace ProyectoXalli_Gentelella.Controllers.Catalogos {
         private bool completado = false;
         private string mensaje = "";
 
-        [Authorize(Roles = "Admin")]
+        [CustomAuthorize(Roles = "Admin")]
         //GET: Platillos
         public ActionResult Index() {
             return View();
@@ -59,7 +60,7 @@ namespace ProyectoXalli_Gentelella.Controllers.Catalogos {
             return Json(completado, JsonRequestBehavior.AllowGet);
         }
 
-        [Authorize(Roles = "Admin")]
+        [CustomAuthorize(Roles = "Admin")]
         /// <summary>
         /// MUESTRA LA VISTA DEL CREATE
         /// </summary>
@@ -199,7 +200,7 @@ namespace ProyectoXalli_Gentelella.Controllers.Catalogos {
             return Json(new { success = completado, message = mensaje, Id = EnviarId }, JsonRequestBehavior.AllowGet);
         }//FIN POST CREATE
 
-        [Authorize(Roles = "Admin")]
+        [CustomAuthorize(Roles = "Admin")]
         /// <summary>
         /// METODO GET PARA MOSTRAR LA VISTA EDIT
         /// </summary>
@@ -270,7 +271,7 @@ namespace ProyectoXalli_Gentelella.Controllers.Catalogos {
             return Json(bar, JsonRequestBehavior.AllowGet);
         }
 
-        [Authorize(Roles = "Admin, Mesero, Bartender")]
+        [CustomAuthorize(Roles = "Admin, Mesero, Bartender")]
         /// <summary>
         /// METODO GET PARA MOSTRAR LA VISTA DETAIL
         /// </summary>

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Reporting.WebForms;
+using ProyectoXalli_Gentelella.Filters;
 using ProyectoXalli_Gentelella.Models;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace ProyectoXalli_Gentelella.Controllers.Reportes {
     public class IngresosController : Controller {
         private DBControl db = new DBControl();
 
-        [Authorize(Roles = "Admin, Recepcionista")]
+        [CustomAuthorize(Roles = "Admin, Recepcionista")]
         // GET: Ingresos
         public ActionResult Index() {
             ViewBag.BodegaId = new SelectList(db.Bodegas, "Id", "DescripcionBodega");

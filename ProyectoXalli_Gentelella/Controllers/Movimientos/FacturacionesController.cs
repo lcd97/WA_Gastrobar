@@ -8,6 +8,7 @@ using System.Web.Mvc;
 using ProyectoXalli_Gentelella.tipoCambioBCN;
 using System.Data.Entity;
 using System.Data.Entity.Validation;
+using ProyectoXalli_Gentelella.Filters;
 
 namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
     [Authorize]
@@ -108,7 +109,7 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
             return Json(codigo, JsonRequestBehavior.AllowGet);
         }
 
-        [Authorize(Roles = "Admin, Recepcionista")]
+        [CustomAuthorize(Roles = "Admin, Recepcionista")]
         // GET: Facturaciones
         public ActionResult Index(string mensaje = "", string ordenId = "") {
             ViewBag.Message = mensaje;//MENSAJE DE RECARGO
@@ -277,7 +278,7 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos {
             return ordCliente;
         }
 
-        [Authorize(Roles = "Admin, Recepcionista")]
+        [CustomAuthorize(Roles = "Admin, Recepcionista")]
         /// <summary>
         /// CARGA LA VISTA PARA AGREGAR UN CLIENTE DIPLOMATICO
         /// </summary>

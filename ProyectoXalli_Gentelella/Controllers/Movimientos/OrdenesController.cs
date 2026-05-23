@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using ProyectoXalli_Gentelella.Filters;
 using ProyectoXalli_Gentelella.Models;
 using ProyectoXalli_Gentelella.Web_Sockets;
 using System;
@@ -48,7 +49,7 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos
         }
 
 
-        [Authorize(Roles = "Admin, Mesero, Bartender")]
+        [CustomAuthorize(Roles = "Admin, Mesero, Bartender")]
         // GET: Ordenes
         public ActionResult Index()
         {
@@ -589,7 +590,7 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos
             return Json(data, JsonRequestBehavior.AllowGet);
         }
 
-        [Authorize(Roles = "Admin, Mesero")]
+        [CustomAuthorize(Roles = "Admin, Mesero")]
         /// <summary>
         /// RETORNA LA VISTA DE ORDENES
         /// </summary>
@@ -721,7 +722,7 @@ namespace ProyectoXalli_Gentelella.Controllers.Movimientos
             return Json(orden, JsonRequestBehavior.AllowGet);
         }
 
-        [Authorize(Roles = "Admin, Mesero, Bartender")]
+        [CustomAuthorize(Roles = "Admin, Mesero, Bartender")]
         /// <summary>
         /// MUESTRA LA VISTA PARA AGREGAR NUEVOS ITEMS DEL MENU
         /// </summary>
