@@ -73,17 +73,17 @@ El sistema permite administrar productos, inventario, órdenes, clientes, mesas 
 2. Abrir solución
   Abrir el archivo .sln en Visual Studio.
 3. Configurar conexión SQL Server
-4. Modificar la cadena de conexión en:
-  Web.config
+4. Modificar archivo de configuración y la cadena de conexión en:
+  Web.Example.config
 5. Ejecutar migraciones
   Update-Database
 6. Ejecutar proyecto
 
  ## Requisitos
-Visual Studio 2019 o 2022
-SQL Server
-.NET Framework
-IIS Express
+  - Visual Studio 2019 (preferiblemente para ejecutar migraciones) o 2022
+  - SQL Server
+  - .NET Framework
+  - IIS Express
 
 # Arquitectura del Proyecto
 
@@ -96,9 +96,7 @@ IIS Express
  ┣ 📂 Views
  ┣ 📂 Scripts
  ┣ 📂 Content
- ┣ 📂 DAL / Repository
  ┣ 📂 Migrations
- ┗ 📂 Database
 ```
 
 # Recursos del Proyecto
