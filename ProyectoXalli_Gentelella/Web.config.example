@@ -1,0 +1,147 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+INSTRUCCIONES:
+
+1. Copiar este archivo como Web.config
+2. Configurar conexiones SQL
+3. Configurar credenciales locales
+4. NO subir Web.config al repositorio
+
+-->
+<configuration>
+	<configSections>
+		<!-- For more information on Entity Framework configuration, visit http://go.microsoft.com/fwlink/?LinkID=237468 -->
+		<section name="entityFramework" type="System.Data.Entity.Internal.ConfigFile.EntityFrameworkSection, EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" requirePermission="false" />
+	</configSections>
+	<connectionStrings>
+		<!-- CAMBIAR POR SUS CREDENCIALES LOCALES -->
+		<add name="DefaultConnection" connectionString="Data Source=SERVIDOR_SQL;Initial Catalog=SecurityDB;Integrated Security=True" providerName="System.Data.SqlClient" />
+		<add name="HotelDB" connectionString="Data Source=SERVIDOR_SQL;Initial Catalog=DBControl;Integrated Security=True" providerName="System.Data.SqlClient" />
+	</connectionStrings>
+	<!-- CAMBIAR POR SUS CREDENCIALES -->
+
+	<appSettings>
+		<add key="EnableSSLOnMail" value="True" />
+		<add key="webpages:Version" value="3.0.0.0" />
+		<add key="webpages:Enabled" value="false" />
+		<add key="ClientValidationEnabled" value="true" />
+		<add key="UnobtrusiveJavaScriptEnabled" value="true" />
+		<add key="AdminUser" value="CAMBIAR_USUARIO_ADMIN" />
+		<add key="AdminPassword" value="CONFIGURAR_PASSWORD" />
+		<add key="AdminEmail" value="CAMBIAR_CORREO@SERVIDOR.com" />
+		<add key="PasswordHotel" value="CONFIGURAR_PASSWORD" />
+	</appSettings>
+	<system.web>
+		<customErrors mode="Off" />
+		<authentication mode="None" />
+		<compilation debug="true" targetFramework="4.6.1">
+			<buildProviders>
+				<add extension=".rdlc" type="Microsoft.Reporting.RdlBuildProvider, Microsoft.ReportViewer.WebForms, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845DCD8080CC91" />
+			</buildProviders>
+			<assemblies>
+				<add assembly="Microsoft.ReportViewer.Common, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845DCD8080CC91" />
+				<add assembly="Microsoft.ReportViewer.WebForms, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845DCD8080CC91" />
+			</assemblies>
+		</compilation>
+		<!--maxRequestLength="5000" para que deje subir archivos hasta 5mb-->
+		<httpRuntime maxRequestLength="10000" targetFramework="4.6.1" />
+		<!--MODIFICANDO LA CULTURIZACION DE IDIOMA ETC-->
+		<globalization culture="es-MX" uiCulture="es-MX" />
+		<httpHandlers>
+			<add path="Reserved.ReportViewerWebControl.axd" verb="*" type="Microsoft.Reporting.WebForms.HttpHandler, Microsoft.ReportViewer.WebForms, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845DCD8080CC91" validate="false" />
+			<add path="Reserved.ReportViewerWebControl.axd" verb="*" type="Microsoft.Reporting.WebForms.HttpHandler, Microsoft.ReportViewer.WebForms, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" validate="false" />
+		</httpHandlers>
+	</system.web>
+	<system.webServer>
+		<modules>
+			<remove name="FormsAuthentication" />
+		</modules>
+		<handlers>
+			<remove name="ExtensionlessUrlHandler-Integrated-4.0" />
+			<remove name="OPTIONSVerbHandler" />
+			<remove name="TRACEVerbHandler" />
+			<add name="ExtensionlessUrlHandler-Integrated-4.0" path="*." verb="*" type="System.Web.Handlers.TransferRequestHandler" preCondition="integratedMode,runtimeVersionv4.0" />
+			<add name="ReportViewerWebControlHandler" verb="*" path="Reserved.ReportViewerWebControl.axd" preCondition="integratedMode" type="Microsoft.Reporting.WebForms.HttpHandler, Microsoft.ReportViewer.WebForms, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845DCD8080CC91" />
+		</handlers>
+		<validation validateIntegratedModeConfiguration="false" />
+	</system.webServer>
+	<runtime>
+		<assemblyBinding xmlns="urn:schemas-microsoft-com:asm.v1">
+			<dependentAssembly>
+				<assemblyIdentity name="Microsoft.Owin.Security" publicKeyToken="31bf3856ad364e35" />
+				<bindingRedirect oldVersion="0.0.0.0-4.0.0.0" newVersion="4.0.0.0" />
+			</dependentAssembly>
+			<dependentAssembly>
+				<assemblyIdentity name="Microsoft.Owin.Security.OAuth" publicKeyToken="31bf3856ad364e35" />
+				<bindingRedirect oldVersion="0.0.0.0-4.0.0.0" newVersion="4.0.0.0" />
+			</dependentAssembly>
+			<dependentAssembly>
+				<assemblyIdentity name="Microsoft.Owin.Security.Cookies" publicKeyToken="31bf3856ad364e35" />
+				<bindingRedirect oldVersion="0.0.0.0-4.0.0.0" newVersion="4.0.0.0" />
+			</dependentAssembly>
+			<dependentAssembly>
+				<assemblyIdentity name="Microsoft.Owin" publicKeyToken="31bf3856ad364e35" />
+				<bindingRedirect oldVersion="0.0.0.0-4.0.0.0" newVersion="4.0.0.0" />
+			</dependentAssembly>
+			<dependentAssembly>
+				<assemblyIdentity name="Antlr3.Runtime" publicKeyToken="eb42632606e9261f" />
+				<bindingRedirect oldVersion="0.0.0.0-3.5.0.2" newVersion="3.5.0.2" />
+			</dependentAssembly>
+			<dependentAssembly>
+				<assemblyIdentity name="System.Web.Optimization" publicKeyToken="31bf3856ad364e35" />
+				<bindingRedirect oldVersion="0.0.0.0-1.1.0.0" newVersion="1.1.0.0" />
+			</dependentAssembly>
+			<dependentAssembly>
+				<assemblyIdentity name="WebGrease" publicKeyToken="31bf3856ad364e35" />
+				<bindingRedirect oldVersion="0.0.0.0-1.6.5135.21930" newVersion="1.6.5135.21930" />
+			</dependentAssembly>
+			<dependentAssembly>
+				<assemblyIdentity name="Newtonsoft.Json" publicKeyToken="30ad4fe6b2a6aeed" />
+				<bindingRedirect oldVersion="0.0.0.0-11.0.0.0" newVersion="11.0.0.0" />
+			</dependentAssembly>
+			<dependentAssembly>
+				<assemblyIdentity name="System.Web.Helpers" publicKeyToken="31bf3856ad364e35" />
+				<bindingRedirect oldVersion="0.0.0.0-3.0.0.0" newVersion="3.0.0.0" />
+			</dependentAssembly>
+			<dependentAssembly>
+				<assemblyIdentity name="System.Web.Mvc" publicKeyToken="31bf3856ad364e35" />
+				<bindingRedirect oldVersion="0.0.0.0-5.2.4.0" newVersion="5.2.4.0" />
+			</dependentAssembly>
+			<dependentAssembly>
+				<assemblyIdentity name="System.Web.WebPages" publicKeyToken="31bf3856ad364e35" />
+				<bindingRedirect oldVersion="0.0.0.0-3.0.0.0" newVersion="3.0.0.0" />
+			</dependentAssembly>
+			<dependentAssembly>
+				<assemblyIdentity name="Microsoft.ReportViewer.WebForms" publicKeyToken="89845dcd8080cc91" culture="neutral" />
+				<bindingRedirect oldVersion="0.0.0.0-14.0.0.0" newVersion="14.0.0.0" />
+			</dependentAssembly>
+		</assemblyBinding>
+	</runtime>
+	<entityFramework>
+		<defaultConnectionFactory type="System.Data.Entity.Infrastructure.LocalDbConnectionFactory, EntityFramework">
+			<parameters>
+				<parameter value="mssqllocaldb" />
+			</parameters>
+		</defaultConnectionFactory>
+		<providers>
+			<provider invariantName="System.Data.SqlClient" type="System.Data.Entity.SqlServer.SqlProviderServices, EntityFramework.SqlServer" />
+		</providers>
+	</entityFramework>
+	<system.codedom>
+		<compilers />
+	</system.codedom>
+	<system.serviceModel>
+		<bindings>
+			<basicHttpBinding>
+				<binding name="Tipo_Cambio_BCNSoap">
+					<security mode="Transport" />
+				</binding>
+				<binding name="Tipo_Cambio_BCNSoap1" />
+			</basicHttpBinding>
+		</bindings>
+		<client>
+			<endpoint address="https://servicios.bcn.gob.ni/Tc_Servicio/ServicioTC.asmx" binding="basicHttpBinding" bindingConfiguration="Tipo_Cambio_BCNSoap" contract="tipoCambioBCN.Tipo_Cambio_BCNSoap" name="Tipo_Cambio_BCNSoap" />
+		</client>
+	</system.serviceModel>
+</configuration>
+<!--ProjectGuid: 895D406E-AF35-4344-8A23-50C5977ACE07-->

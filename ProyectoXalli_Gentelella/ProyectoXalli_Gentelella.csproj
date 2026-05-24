@@ -276,6 +276,11 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202605210016256_InitialCreate.cs" />
+    <Compile Include="Migrations\202605210016256_InitialCreate.Designer.cs">
+      <DependentUpon>202605210016256_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Bodega.cs" />
     <Compile Include="Models\CategoriaMenu.cs" />
@@ -340,6 +345,7 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Views\Shared\AccessDenied.cshtml" />
+    <Content Include="Web.config.example" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -763,6 +769,11 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadataStorage Include="Connected Services\tipoCambioBCN\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\202605210016256_InitialCreate.resx">
+      <DependentUpon>202605210016256_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
